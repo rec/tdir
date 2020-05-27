@@ -15,7 +15,7 @@ def tdir(*args, **kwargs):
 
 def fill(root, *args, **kwargs):
     if args:
-        fill(root, **{a: a for a in args})
+        fill(root, **{a.strip(): a for a in args})
 
     for k, v in kwargs.items():
         rk = root / k
@@ -24,6 +24,8 @@ def fill(root, *args, **kwargs):
         to_make.mkdir(parents=True, exist_ok=True)
 
         if isinstance(v, str):
+            if not v.endswith('\n'):
+                v += '\n'
             rk.write_text(v)
 
         elif isinstance(v, (bytes, bytearray)):

@@ -8,13 +8,13 @@ class TestTdir(unittest.TestCase):
         with tdir('a', 'b', 'c') as td:
             assert sorted(i.name for i in td.iterdir()) == ['a', 'b', 'c']
             for i in 'abc':
-                assert (td / i).read_text() == i
+                assert (td / i).read_text() == i + '\n'
 
     def test_dict(self):
         with tdir(one='ONE', two='TWO') as td:
             assert sorted(i.name for i in td.iterdir()) == ['one', 'two']
             for i in ('one', 'two'):
-                assert (td / i).read_text() == i.upper()
+                assert (td / i).read_text() == i.upper() + '\n'
 
     def test_big(self):
         items = {
@@ -46,4 +46,4 @@ class TestTdir(unittest.TestCase):
             assert foo.toast.TOAST == 32
             assert bar.toast.TOAST == 23
             for i in 'abc':
-                assert (td / 'data' / i).read_text() == i
+                assert (td / 'data' / i).read_text() == i + '\n'
