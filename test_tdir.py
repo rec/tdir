@@ -2,13 +2,22 @@ from tdir import tdir
 import sys
 import unittest
 
+from pathlib import Path
+
 
 class TestTdir(unittest.TestCase):
-    def test_simple(self):
+    def test_simple_cwd(self):
         with tdir('a', 'b', 'c') as td:
             assert sorted(i.name for i in td.iterdir()) == ['a', 'b', 'c']
             for i in 'abc':
+                assert Path(i).read_text() == i + '\n'
+
+    def test_simple(self):
+        with tdir('a', 'b', 'c', cwd=False) as td:
+            assert sorted(i.name for i in td.iterdir()) == ['a', 'b', 'c']
+            for i in 'abc':
                 assert (td / i).read_text() == i + '\n'
+                assert not Path(i).exists()
 
     def test_dict(self):
         with tdir(one='ONE', two='TWO') as td:

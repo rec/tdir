@@ -1,16 +1,25 @@
 from pathlib import Path
 import contextlib
+import os
 import tempfile
 
 __version__ = '0.9.0'
 
 
 @contextlib.contextmanager
-def tdir(*args, **kwargs):
+def tdir(*args, cwd=True, **kwargs):
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         fill(root, *args, **kwargs)
-        yield root
+        if cwd:
+            old_cwd = os.getcwd()
+            os.chdir(td)
+            try:
+                yield root
+            finally:
+                os.chdir(old_cwd)
+        else:
+            yield root
 
 
 def fill(root, *args, **kwargs):
