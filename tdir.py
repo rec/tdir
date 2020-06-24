@@ -33,7 +33,7 @@ import os
 import tempfile
 
 __all__ = 'tdir', 'fill'
-__version__ = '0.9.1'
+__version__ = '0.9.2'
 
 
 @contextlib.contextmanager
