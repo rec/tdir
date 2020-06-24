@@ -43,8 +43,9 @@ def tdir(*args, cwd=True, **kwargs):
 
     ARGUMENTS
       args:
-        A list of string file names.  Each file is created and filled
-        with the string value of its name.
+        A list of strings or dictionaries.  For strings, a file is created
+        with that string as name and contents.  For dictionaries, the contents
+        are used to recursively create and fill the directory.
 
       cwd:
         If true, change the working directory to the temp dir at the start
@@ -54,7 +55,7 @@ def tdir(*args, cwd=True, **kwargs):
         A dictionary mapping file or directory names to values.
         If the key's value is a string it is used to file a file of that name.
         If it's a dictionary, its contents are used to recursively create and
-        fill a directory.
+        fill a subdirectory.
     """
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
@@ -79,14 +80,15 @@ def fill(root, *args, **kwargs):
         The root directory to fill
 
       args:
-        A list of string file names.  Each file is created and filled
-        with the string value of its name.
+        A list of strings or dictionaries.  For strings, a file is created
+        with that string as name and contents.  For dictionaries, the contents
+        are used to recursively create and fill the directory.
 
       kwargs:
         A dictionary mapping file or directory names to values.
         If the key's value is a string it is used to file a file of that name.
         If it's a dictionary, its contents are used to recursively create and
-        fill a directory.
+        fill a subdirectory.
     """
     for a in args:
         if not isinstance(a, dict):
