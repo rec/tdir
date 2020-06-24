@@ -13,7 +13,7 @@ class TestTdir(unittest.TestCase):
                 assert Path(i).read_text() == i + '\n'
 
     def test_simple(self):
-        with tdir('a', 'b', 'c', cwd=False) as td:
+        with tdir('a', 'b', {'c': 'c'}, cwd=False) as td:
             assert sorted(i.name for i in td.iterdir()) == ['a', 'b', 'c']
             for i in 'abc':
                 assert (td / i).read_text() == i + '\n'
@@ -40,6 +40,24 @@ class TestTdir(unittest.TestCase):
         }
 
         with tdir(**items) as td:
+            sys_path = sys.path[:]
+            sys.path.insert(0, str(td))
+
+            try:
+                import bang
+                import foo.toast
+                import bar.toast
+
+            finally:
+                sys.path[:] = sys_path
+
+            assert bang.TEST == 5
+            assert foo.toast.TOAST == 32
+            assert bar.toast.TOAST == 23
+            for i in 'abc':
+                assert (td / 'data' / i).read_text() == i + '\n'
+
+        with tdir(items) as td:
             sys_path = sys.path[:]
             sys.path.insert(0, str(td))
 

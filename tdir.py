@@ -88,8 +88,10 @@ def fill(root, *args, **kwargs):
         If it's a dictionary, its contents are used to recursively create and
         fill a directory.
     """
-    if args:
-        fill(root, **{a.strip(): a for a in args})
+    for a in args:
+        if not isinstance(a, dict):
+            a = {a.strip(): a}
+        fill(root, **a)
 
     for k, v in kwargs.items():
         rk = root / k
