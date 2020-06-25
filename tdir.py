@@ -72,7 +72,7 @@ import os
 import tempfile
 
 __all__ = 'tdir', 'tdec', 'fill'
-__version__ = '0.9.2'
+__version__ = '0.10.0'
 
 
 @contextlib.contextmanager

@@ -1,3 +1,8 @@
+## v0.10.0 - 20/06/25
+
+* More documentation
+* New tdir.tdec decorator
+
 ## v0.9.2 - 20/06/24
 
 * Update documentation
