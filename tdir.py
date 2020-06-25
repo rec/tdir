@@ -8,7 +8,7 @@ tempfile.TemporaryDirectory and then populates it.
 Extremely useful for unit tests where you want a whole directory
 full of files really fast.
 
-EXAMPLE
+EXAMPLE: to temporarily create a directory structure
 
 .. code-block:: python
 
@@ -26,13 +26,26 @@ EXAMPLE
         # one line, file `four` with two lines, and then a subdirectory `sub/`
         # with more files.
 
+EXAMPLE: as a decorator for tests
+
+
+.. code-block:: python
+
+    import tdir
+    import unittest
+
+    @tdir
+
+
 """
 from pathlib import Path
+from unittest import mock
 import contextlib
+import functools
 import os
 import tempfile
 
-__all__ = 'tdir', 'fill'
+__all__ = 'tdir', 'tdec', 'fill'
 __version__ = '0.9.2'
 
 
@@ -71,6 +84,47 @@ def tdir(*args, cwd=True, **kwargs):
             yield root
 
 
+def tdec(*args, **kwargs):
+    """
+    Decorate a function or TestCase so it runs in a temporary directory with
+    file contents set.
+
+    If args has exactly one element which is callable (either a function or a
+    class), ``tdec`` returns that callable, but decorated.
+
+    Otherwise, ``tdec`` returns a decorator to wrap functions so they get run
+    in a temporary directory with data.
+    """
+
+    def wrap(args, kwargs, fn):
+        def wrap_one(fn):
+            @functools.wraps(fn)
+            def wrapper(*args2, **kwargs2):
+                with tdir(*args, **kwargs):
+                    return fn(*args2, **kwargs2)
+
+            return wrapper
+
+        if not isinstance(fn, type):
+            return wrap_one(fn)
+
+        for attr in dir(fn):
+            if attr.startswith(mock.patch.TEST_PREFIX):
+                value = getattr(fn, attr)
+                if callable(value):
+                    setattr(fn, attr, wrap_one(value))
+        return fn
+
+    if len(args) == 1 and callable(args[0]):
+        assert not kwargs
+        return wrap((), {}, args[0])
+    else:
+        assert all(isinstance(i, (str, dict)) for i in args)
+        assert all(isinstance(i, (str, dict)) for i in kwargs.values())
+
+        return functools.partial(wrap, args, kwargs)
+
+
 def fill(root, *args, **kwargs):
     """
     Fill a directory with files containing strings
@@ -91,12 +145,14 @@ def fill(root, *args, **kwargs):
         fill a subdirectory.
     """
     for a in args:
-        if not isinstance(a, dict):
+        if isinstance(a, str):
             a = {a.strip(): a}
+        elif not isinstance(a, dict):
+            raise TypeError('Do not understand type %s of %s' % (a, type(a)))
         fill(root, **a)
 
     for k, v in kwargs.items():
-        rk = root / k
+        rk = Path(root) / k
         is_dir = isinstance(v, (dict, list, tuple))
         to_make = rk if is_dir else rk.parent
         to_make.mkdir(parents=True, exist_ok=True)

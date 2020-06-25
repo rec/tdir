@@ -1,8 +1,10 @@
-from tdir import tdir
+from tdir import fill, tdir, tdec
 import sys
 import unittest
 
 from pathlib import Path
+
+CWD = Path().absolute()
 
 
 class TestTdir(unittest.TestCase):
@@ -24,6 +26,30 @@ class TestTdir(unittest.TestCase):
             assert sorted(i.name for i in td.iterdir()) == ['one', 'two']
             for i in ('one', 'two'):
                 assert (td / i).read_text() == i.upper() + '\n'
+
+    def test_binary(self):
+        with tdir(one=b'ONE', two=bytearray(b'TWO')) as td:
+            assert sorted(i.name for i in td.iterdir()) == ['one', 'two']
+            for i in ('one', 'two'):
+                assert (td / i).read_bytes() == i.upper().encode()
+
+    def test_list(self):
+        with tdir(sub=['one', 'two']) as td:
+            sub = td / 'sub'
+            assert sorted(i.name for i in sub.iterdir()) == ['one', 'two']
+            for i in ('one', 'two'):
+                assert (sub / i).read_text() == i + '\n'
+
+    def test_eror(self):
+        with tdir():
+            with self.assertRaises(TypeError) as m:
+                fill('.', foo=3)
+        assert m.exception.args[0].startswith('Do not understand type')
+
+        with self.assertRaises(TypeError) as m:
+            with tdir(None):
+                pass
+        assert m.exception.args[0].startswith('Do not understand type')
 
     def test_big(self):
         items = {
@@ -74,3 +100,43 @@ class TestTdir(unittest.TestCase):
             assert bar.toast.TOAST == 23
             for i in 'abc':
                 assert (td / 'data' / i).read_text() == i + '\n'
+
+
+@tdec
+class TestTdirClass1(unittest.TestCase):
+    def test_not_in_root(self):
+        cwd = str(Path().absolute())
+        assert cwd != CWD
+
+
+@tdec()
+class TestTdirClass2(unittest.TestCase):
+    def test_not_in_root(self):
+        cwd = str(Path().absolute())
+        assert cwd != CWD
+
+
+@tdec('a', foo='bar')
+class TestTdirClass3(unittest.TestCase):
+    test_variable = 3
+
+    def test_values(self):
+        assert Path('a').read_text() == 'a\n'
+        assert Path('foo').read_text() == 'bar\n'
+
+
+class TestTdirClass4(unittest.TestCase):
+    @tdec
+    def test_not_in_root(self):
+        cwd = str(Path().absolute())
+        assert cwd != CWD
+
+    @tdec()
+    def test_not_in_root2(self):
+        cwd = str(Path().absolute())
+        assert cwd != CWD
+
+    @tdec('a', foo='bar')
+    def test_values(self):
+        assert Path('a').read_text() == 'a\n'
+        assert Path('foo').read_text() == 'bar\n'
