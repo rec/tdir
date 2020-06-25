@@ -12,8 +12,7 @@ populate it.
 
 * ``fill`` recursively fills a directory (temporary or not)
 
-Extremely useful for unit tests where you want a whole directory
-full of files really fast.
+Handy for unit tests where you want a whole directory full of files fast.
 
 EXAMPLE: to temporarily create a directory structure
 
@@ -40,11 +39,12 @@ EXAMPLE: as a decorator for tests
     from pathlib import Path
     import tdir
     import unittest
+
     CWD = Path().absolute()
 
 
-    # Decorate a whole class
-    @tdir('a', 'b', foo='bar')
+    # Decorate a whole class so each test runs in a new temporary directory
+    @tdir('a', foo='bar')
     class MyTest(unittest.TestCast):
         def test_something(self):
             assert Path('a').read_text() = 'a\n'
@@ -53,10 +53,10 @@ EXAMPLE: as a decorator for tests
 
     # Decorate single tests
     class MyTest(unittest.TestCast):
-        @tdir('a', 'b', foo='bar')
+        @tdir(foo='bar', baz=bytes(range(4)))
         def test_something(self):
-            assert Path('a').read_text() = 'a\n'
             assert Path('foo').read_text() = 'bar\n'
+            assert Path('baz').read_bytes() = bytes(range(4)))
 
         # Run in an empty temporary directory
         @tdir
@@ -78,7 +78,7 @@ __version__ = '0.10.0'
 @contextlib.contextmanager
 def tdir(*args, cwd=True, **kwargs):
     """
-    A context that creates and fills a temporary directory
+    A context manager to create and fill a temporary directory.
 
     ARGUMENTS
       args:
@@ -112,14 +112,32 @@ def tdir(*args, cwd=True, **kwargs):
 
 def tdec(*args, **kwargs):
     """
-    Decorate a function or TestCase so it runs in a temporary directory with
-    file contents set.
+    Decorate a function or ``unittest.TestCase`` so it runs in a populated
+    temporary directory.
 
-    If args has exactly one element which is callable (either a function or a
-    class), ``tdec`` returns that callable, but decorated.
+    If ``tdec()`` has exactly one callable argument, either a function or a
+    class, ``tdec()`` decorates it to run in an empty temporary directory.
 
-    Otherwise, ``tdec`` returns a decorator to wrap functions so they get run
-    in a temporary directory with data.
+    Otherwise, ``tdec()`` returns a decorator which decorates a function or
+    class to run a temporary directory populated with entries from args and
+    kwargs/
+
+    ARGUMENTS
+      args:
+        Either a single callable, or a list of strings or dictionaries.
+        For strings, a file is created with that string as name and contents.
+        For dictionaries, the contents are used to recursively create and
+        fill the directory.
+
+      cwd:
+        If true, change the working directory to the temp dir at the start
+        of the context and restore the original working directory at the end.
+
+      kwargs:
+        A dictionary mapping file or directory names to values.
+        If the key's value is a string it is used to file a file of that name.
+        If it's a dictionary, its contents are used to recursively create and
+        fill a subdirectory.
     """
 
     def wrap(args, kwargs, fn):
@@ -153,7 +171,7 @@ def tdec(*args, **kwargs):
 
 def fill(root, *args, **kwargs):
     """
-    Fill a directory with files containing strings
+    Recursively populate a directory.
 
     ARGUMENTS
       root:

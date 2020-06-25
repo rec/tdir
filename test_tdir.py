@@ -1,8 +1,7 @@
+from pathlib import Path
 from tdir import fill, tdir, tdec
 import sys
 import unittest
-
-from pathlib import Path
 
 CWD = Path().absolute()
 
