@@ -2,8 +2,15 @@ r"""
 🗃 tdir - create and fill a temporary directory 🗃
 ======================================================
 
-A context manager that creates a temporary directory using
-tempfile.TemporaryDirectory and then populates it.
+Create a temporary directory using tempfile.TemporaryDirectory and then
+populate it.
+
+* ``tdir`` is a context manager that runs in a populated temporary directory
+
+* ``tdec`` is a decorator to run functions or test suites in a populated
+  temporary directory
+
+* ``fill`` recursively fills a directory (temporary or not)
 
 Extremely useful for unit tests where you want a whole directory
 full of files really fast.
@@ -28,15 +35,34 @@ EXAMPLE: to temporarily create a directory structure
 
 EXAMPLE: as a decorator for tests
 
-
 .. code-block:: python
 
+    from pathlib import Path
     import tdir
     import unittest
+    CWD = Path().absolute()
 
-    @tdir
+
+    # Decorate a whole class
+    @tdir('a', 'b', foo='bar')
+    class MyTest(unittest.TestCast):
+        def test_something(self):
+            assert Path('a').read_text() = 'a\n'
+            assert Path('foo').read_text() = 'bar\n'
 
 
+    # Decorate single tests
+    class MyTest(unittest.TestCast):
+        @tdir('a', 'b', foo='bar')
+        def test_something(self):
+            assert Path('a').read_text() = 'a\n'
+            assert Path('foo').read_text() = 'bar\n'
+
+        # Run in an empty temporary directory
+        @tdir
+        def test_something_else(self):
+            assert not Path('a').exists()
+            assert Path().absolute() != CWD
 """
 from pathlib import Path
 from unittest import mock
