@@ -1,3 +1,9 @@
+## v0.11.0 - 20/06/29
+
+* Update documentation
+* Passing a Path copies the file to the tdir
+* Better documentation
+
 ## v0.10.0 - 20/06/25
 
 * More documentation
