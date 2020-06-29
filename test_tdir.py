@@ -39,6 +39,20 @@ class TestTdir(unittest.TestCase):
             for i in ('one', 'two'):
                 assert (sub / i).read_text() == i + '\n'
 
+    def test_path1(self):
+        path = Path(__file__)
+        with tdir(path):
+            expected = path.read_text()
+            actual = Path(path.name).read_text()
+            assert expected == actual
+
+    def test_path2(self):
+        path = Path(__file__)
+        with tdir(foo=path):
+            expected = path.read_text()
+            actual = Path('foo').read_text()
+            assert expected == actual
+
     def test_eror(self):
         with tdir():
             with self.assertRaises(TypeError) as m:

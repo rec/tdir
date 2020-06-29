@@ -2,8 +2,8 @@ r"""
 🗃 tdir - create and fill a temporary directory 🗃
 ======================================================
 
-Create a temporary directory using tempfile.TemporaryDirectory and then
-populate it.
+Creates a temporary directory using tempfile.TemporaryDirectory and then
+populates it with files.  Great for tests!
 
 * ``tdir`` is a context manager that runs in a populated temporary directory
 
@@ -12,8 +12,6 @@ populate it.
 
 * ``fill`` recursively fills a directory (temporary or not)
 
-Handy for unit tests where you want a whole directory full of files fast.
-
 EXAMPLE: to temporarily create a directory structure
 
 .. code-block:: python
@@ -21,16 +19,14 @@ EXAMPLE: to temporarily create a directory structure
     import tdir
 
     with tdir.tdir(
-        'one', 'two', 'three',
-        four='two\nlines',
-        sub1={
-            'six': 'A short file',
-            'seven': 'blank lines\n\n\n\n',
-            'eight': ['a', 'b', 'c']
-    }) as td:
-        # Now the directory `td` has files `one`, `two` and `three`, each with
-        # one line, file `four` with two lines, and then a subdirectory `sub/`
-        # with more files.
+        'one.txt', 'two.txt',
+        three='some information',
+        four=Path('/some/existing/file'),
+        subdirectory1={
+            'file.txt': 'blank lines\n\n\n\n',
+            'subdirectory': ['a', 'b', 'c']
+        },
+    ):
 
 EXAMPLE: as a decorator for tests
 
@@ -69,6 +65,7 @@ from unittest import mock
 import contextlib
 import functools
 import os
+import shutil
 import tempfile
 
 __all__ = 'tdir', 'tdec', 'fill'
@@ -178,19 +175,30 @@ def fill(root, *args, **kwargs):
         The root directory to fill
 
       args:
-        A list of strings or dictionaries.  For strings, a file is created
-        with that string as name and contents.  For dictionaries, the contents
-        are used to recursively create and fill the directory.
+        A list of strings, dictionaries or Paths.
+
+        For strings, a file is created with that string as name and contents.
+
+        For dictionaries, the contents are used to recursively create and fill
+        the directory.
+
+        For Paths, the file is copied into the target directory
 
       kwargs:
         A dictionary mapping file or directory names to values.
+
         If the key's value is a string it is used to file a file of that name.
+
         If it's a dictionary, its contents are used to recursively create and
         fill a subdirectory.
+
+        If it's a Path, that file is copied to the target directory.
     """
     for a in args:
         if isinstance(a, str):
             a = {a.strip(): a}
+        elif isinstance(a, Path):
+            a = {a.name: a}
         elif not isinstance(a, dict):
             raise TypeError('Do not understand type %s of %s' % (a, type(a)))
         fill(root, **a)
@@ -205,6 +213,9 @@ def fill(root, *args, **kwargs):
             if not v.endswith('\n'):
                 v += '\n'
             rk.write_text(v)
+
+        elif isinstance(v, Path):
+            shutil.copyfile(str(v), str(rk))
 
         elif isinstance(v, (bytes, bytearray)):
             rk.write_bytes(v)
