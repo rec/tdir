@@ -1,5 +1,4 @@
 from setuptools import setup
-import tdir
 
 _classifiers = [
     'Development Status :: 4 - Beta',
@@ -14,10 +13,17 @@ _classifiers = [
     'Topic :: Utilities',
 ]
 
+
+def _version():
+    with open('tdir.py') as fp:
+        line = next(i for i in fp if i.startswith('__version__'))
+        return line.strip().split()[-1].strip("'")
+
+
 if __name__ == '__main__':
     setup(
         name='tdir',
-        version=tdir.__version__,
+        version=_version(),
         author='Tom Ritchford',
         author_email='tom@swirly.com',
         url='https://github.com/rec/tdir',
