@@ -60,10 +60,10 @@ EXAMPLE: as a decorator for tests
             assert not Path('a').exists()
             assert Path().absolute() != CWD
 """
+from dek import dek
 from pathlib import Path
 from unittest import mock
 import contextlib
-import functools
 import os
 import shutil
 import tempfile
@@ -107,7 +107,8 @@ def tdir(*args, cwd=True, **kwargs):
             yield root
 
 
-def tdec(*args, **kwargs):
+@dek(methods=mock.patch.TEST_PREFIX)
+def tdec(func, *args, cwd=True, **kwargs):
     """
     Decorate a function or ``unittest.TestCase`` so it runs in a populated
     temporary directory.
@@ -136,34 +137,8 @@ def tdec(*args, **kwargs):
         If it's a dictionary, its contents are used to recursively create and
         fill a subdirectory.
     """
-
-    def wrap(args, kwargs, fn):
-        def wrap_one(fn):
-            @functools.wraps(fn)
-            def wrapper(*args2, **kwargs2):
-                with tdir(*args, **kwargs):
-                    return fn(*args2, **kwargs2)
-
-            return wrapper
-
-        if not isinstance(fn, type):
-            return wrap_one(fn)
-
-        for attr in dir(fn):
-            if attr.startswith(mock.patch.TEST_PREFIX):
-                value = getattr(fn, attr)
-                if callable(value):
-                    setattr(fn, attr, wrap_one(value))
-        return fn
-
-    if len(args) == 1 and callable(args[0]):
-        assert not kwargs
-        return wrap((), {}, args[0])
-    else:
-        assert all(isinstance(i, (str, dict)) for i in args)
-        assert all(isinstance(i, (str, dict)) for i in kwargs.values())
-
-        return functools.partial(wrap, args, kwargs)
+    with tdir(*args, cwd=cwd, **kwargs):
+        func()
 
 
 def fill(root, *args, **kwargs):
