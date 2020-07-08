@@ -3,22 +3,20 @@ r"""
 ======================================================
 
 Creates a temporary directory using tempfile.TemporaryDirectory and then
-populates it with files.  Great for tests!
+fills it with files.  Great for tests!
 
-* ``tdir`` is a context manager that runs in a populated temporary directory
+``tdir`` is a context manager and decorator that runs functions or test
+  suites in a temporary directory filled with files
 
-* ``tdec`` is a decorator to run functions or test suites in a populated
-  temporary directory
+``fill`` recursively fills a directory (temporary or not)
 
-* ``fill`` recursively fills a directory (temporary or not)
-
-EXAMPLE: to temporarily create a directory structure
+EXAMPLE: as a context manager
 
 .. code-block:: python
 
     import tdir
 
-    with tdir.tdir(
+    with tdir(
         'one.txt', 'two.txt',
         three='some information',
         four=Path('/some/existing/file'),
@@ -28,28 +26,31 @@ EXAMPLE: to temporarily create a directory structure
         },
     ):
 
-EXAMPLE: as a decorator for tests
+EXAMPLE: as a decorator
 
 .. code-block:: python
 
     from pathlib import Path
-    import tdir
     import unittest
 
-    CWD = Path().absolute()
+    @tdir
+    def my_function():
+        # Do some work in a temporary directory
 
 
-    # Decorate a whole class so each test runs in a new temporary directory
+    # Decorate a TestCase so each test runs in a new temporary directory
     @tdir('a', foo='bar')
     class MyTest(unittest.TestCast):
         def test_something(self):
             assert Path('a').read_text() = 'a\n'
+
+        def test_something_else(self):
             assert Path('foo').read_text() = 'bar\n'
 
 
-    # Decorate single tests
-    class MyTest(unittest.TestCast):
-        @tdir(foo='bar', baz=bytes(range(4)))
+    # Decorate single test in a unitttest
+    class MyTest2(unittest.TestCast):
+        @tdir(foo='bar', baz=bytes(range(4)))  # binary files are possible
         def test_something(self):
             assert Path('foo').read_text() = 'bar\n'
             assert Path('baz').read_bytes() = bytes(range(4)))
@@ -58,116 +59,101 @@ EXAMPLE: as a decorator for tests
         @tdir
         def test_something_else(self):
             assert not Path('a').exists()
-            assert Path().absolute() != CWD
+            assert Path().absolute() != self.ORIGINAL_PATH
+
+        ORIGINAL_PATH = Path().absolute()
+
 """
 from dek import dek
 from pathlib import Path
-from unittest import mock
-import contextlib
+from unittest.mock import patch
+import functools
 import os
 import shutil
+import sys
 import tempfile
+import traceback
 
 __all__ = 'tdir', 'tdec', 'fill'
 __version__ = '0.11.3'
 
 
 class tdir:
-    def __new__(cls, *args, **kwargs):
-        if not kwargs and len(args) == 1 and callable(args[0]):
-            return _decorator(args[0])
+    """
+    Set up a temporary directory, fill it with files, then tear it down at
+    the end of an operation.
+
+    ``tdir`` can be used either as a context manager, or a decorator that
+    works on functions or classes.
+
+    ARGUMENTS
+      args, kwargs:
+        Files to put into the temporary directory.
+        See the documentation for ``tdir.fill()``
+
+      cwd:
+        If True (the default), change the working directory to the tdir at
+        the start of the operation and restore the original working directory
+        at the end.
+
+      methods:
+        Which methods on classes to decorate.  See
+        https://github.com/rec/dek/blob/master/README.rst\
+#dekdekdecorator-deferfalse-methodsnone
+    """
+
+    def __new__(cls, *args, cwd=True, methods=patch.TEST_PREFIX, **kwargs):
+        is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
+        if is_decorator:
+            decorator = args[0]
+            args = ()
 
         obj = super(tdir, cls).__new__(cls)
         obj.args = args
-        obj.kwargs = kwargs
+        obj.kwargs = dict(kwargs)
+        obj.cwd = cwd
+
+        @dek(methods=methods)
+        def call(func, *args, **kwargs):
+            with obj:
+                func(*args, **kwargs)
+
+        obj._call = call
+
+        if is_decorator:
+            return obj(decorator)
+
         return obj
 
     def __enter__(self):
-        self._cm = _context_manager(*self.args, **self.kwargs)
-        return self._cm.__enter__()
+        self.td = tempfile.TemporaryDirectory()
+        td = self.td.__enter__()
+
+        root = Path(td)
+        fill(root, *self.args, **self.kwargs)
+        if self.cwd:
+            self.old_cwd = os.getcwd()
+            os.chdir(td)
+
+        return root
 
     def __exit__(self, *args):
-        return self._cm.__exit__(*args)
+        try:
+            os.chdir(self.old_cwd)
+        except Exception:
+            traceback.print_exc()
+        return self.td.__exit__(*args)
 
     def __call__(self, *args, **kwargs):
-        return _decorator(*self.args, **self.kwargs)(*args, **kwargs)
+        return self._call(*args, **kwargs)
 
 
 tdec = tdir  # DEPRECATED
 
 
-@contextlib.contextmanager
-def _context_manager(*args, cwd=True, **kwargs):
-    """
-    A context manager to create and fill a temporary directory.
-
-    ARGUMENTS
-      args:
-        A list of strings or dictionaries.  For strings, a file is created
-        with that string as name and contents.  For dictionaries, the contents
-        are used to recursively create and fill the directory.
-
-      cwd:
-        If true, change the working directory to the temp dir at the start
-        of the context and restore the original working directory at the end.
-
-      kwargs:
-        A dictionary mapping file or directory names to values.
-        If the key's value is a string it is used to file a file of that name.
-        If it's a dictionary, its contents are used to recursively create and
-        fill a subdirectory.
-    """
-    with tempfile.TemporaryDirectory() as td:
-        root = Path(td)
-        fill(root, *args, **kwargs)
-        if cwd:
-            old_cwd = os.getcwd()
-            os.chdir(td)
-            try:
-                yield root
-            finally:
-                os.chdir(old_cwd)
-        else:
-            yield root
-
-
-@dek(methods=mock.patch.TEST_PREFIX)
-def _decorator(func, *args, cwd=True, **kwargs):
-    """
-    Decorate a function or ``unittest.TestCase`` so it runs in a populated
-    temporary directory.
-
-    If ``tdec()`` has exactly one callable argument, either a function or a
-    class, ``tdec()`` decorates it to run in an empty temporary directory.
-
-    Otherwise, ``tdec()`` returns a decorator which decorates a function or
-    class to run a temporary directory populated with entries from args and
-    kwargs/
-
-    ARGUMENTS
-      args:
-        Either a single callable, or a list of strings or dictionaries.
-        For strings, a file is created with that string as name and contents.
-        For dictionaries, the contents are used to recursively create and
-        fill the directory.
-
-      cwd:
-        If true, change the working directory to the temp dir at the start
-        of the context and restore the original working directory at the end.
-
-      kwargs:
-        A dictionary mapping file or directory names to values.
-        If the key's value is a string it is used to file a file of that name.
-        If it's a dictionary, its contents are used to recursively create and
-        fill a subdirectory.
-    """
-    with _context_manager(*args, cwd=cwd, **kwargs):
-        func()
-
-
 def fill(root, *args, **kwargs):
     """
-    Recursively populate a directory.
+    Recursively fills a directory.
 
     ARGUMENTS
       root:
@@ -227,3 +213,18 @@ def fill(root, *args, **kwargs):
 
         else:
             raise TypeError('Do not understand type %s of %s' % (v, type(v)))
+
+
+class _tdir:
+    def __getattr__(self, name):
+        try:
+            return globals()[name]
+        except KeyError:
+            return super().__getattr__(name)
+
+    @functools.wraps(tdir)
+    def __call__(self, *args, **kwargs):
+        return tdir(*args, **kwargs)
+
+
+sys.modules[__name__] = _tdir()

@@ -1,6 +1,6 @@
 from pathlib import Path
-from tdir import fill, tdir
 import sys
+import tdir
 import unittest
 
 CWD = Path().absolute()
@@ -53,10 +53,10 @@ class TestTdir(unittest.TestCase):
             actual = Path('foo').read_text()
             assert expected == actual
 
-    def test_eror(self):
+    def test_error(self):
         with tdir():
             with self.assertRaises(TypeError) as m:
-                fill('.', foo=3)
+                tdir.fill('.', foo=3)
         assert m.exception.args[0].startswith('Do not understand type')
 
         with self.assertRaises(TypeError) as m:
@@ -140,9 +140,17 @@ class TestTdirClass3(unittest.TestCase):
 
 class TestTdirClass4(unittest.TestCase):
     @tdir
-    def test_not_in_root(self):
+    def test_not_in_root_YYY(self):
         cwd = str(Path().absolute())
         assert cwd != CWD
+
+    def test_not_in_root_XXX(self):
+        @tdir
+        def fn():
+            cwd = str(Path().absolute())
+            assert cwd != CWD
+
+        fn()
 
     @tdir()
     def test_not_in_root2(self):
@@ -153,3 +161,14 @@ class TestTdirClass4(unittest.TestCase):
     def test_values(self):
         assert Path('a').read_text() == 'a\n'
         assert Path('foo').read_text() == 'bar\n'
+
+
+@tdir('a', foo='bar', methods='test_keep')
+class TestTdirClassMethods(unittest.TestCase):
+    def test_keep(self):
+        cwd = Path().absolute()
+        assert cwd != CWD
+
+    def test_not(self):
+        cwd = Path().absolute()
+        assert cwd == CWD
