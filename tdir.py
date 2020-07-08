@@ -72,6 +72,30 @@ __all__ = 'tdir', 'tdec', 'fill'
 __version__ = '0.11.3'
 
 
+class _TDir:
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def __enter__(self):
+        # It's a context manager
+        self._tdir = tdir(*self.args, **self.kwargs)
+        return self._tdir.__enter__()
+
+    def __exit__(self, *args):
+        return self._tdir.__exit__(*args)
+
+    def __call__(self, *args, **kwargs):
+        # It's a decorator
+        return tdec(*self.args, **self.kwargs)(*args, **kwargs)
+
+
+def TDir(*args, **kwargs):
+    if not kwargs and len(args) == 1 and callable(args[0]):
+        return tdec(args[0])
+    return _TDir(*args, **kwargs)
+
+
 @contextlib.contextmanager
 def tdir(*args, cwd=True, **kwargs):
     """
@@ -138,6 +162,7 @@ def tdec(func, *args, cwd=True, **kwargs):
         fill a subdirectory.
     """
     with tdir(*args, cwd=cwd, **kwargs):
+        print('TEN', func)
         func()
 
 
