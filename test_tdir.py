@@ -1,5 +1,5 @@
 from pathlib import Path
-from tdir import fill, tdir, tdec
+from tdir import fill, tdir
 import sys
 import unittest
 
@@ -115,21 +115,21 @@ class TestTdir(unittest.TestCase):
                 assert (td / 'data' / i).read_text() == i + '\n'
 
 
-@tdec
+@tdir
 class TestTdirClass1(unittest.TestCase):
     def test_not_in_root(self):
         cwd = str(Path().absolute())
         assert cwd != CWD
 
 
-@tdec()
+@tdir()
 class TestTdirClass2(unittest.TestCase):
     def test_not_in_root(self):
         cwd = str(Path().absolute())
         assert cwd != CWD
 
 
-@tdec('a', foo='bar')
+@tdir('a', foo='bar')
 class TestTdirClass3(unittest.TestCase):
     test_variable = 3
 
@@ -139,17 +139,17 @@ class TestTdirClass3(unittest.TestCase):
 
 
 class TestTdirClass4(unittest.TestCase):
-    @tdec
+    @tdir
     def test_not_in_root(self):
         cwd = str(Path().absolute())
         assert cwd != CWD
 
-    @tdec()
+    @tdir()
     def test_not_in_root2(self):
         cwd = str(Path().absolute())
         assert cwd != CWD
 
-    @tdec('a', foo='bar')
+    @tdir('a', foo='bar')
     def test_values(self):
         assert Path('a').read_text() == 'a\n'
         assert Path('foo').read_text() == 'bar\n'
