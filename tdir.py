@@ -72,32 +72,32 @@ __all__ = 'tdir', 'tdec', 'fill'
 __version__ = '0.11.3'
 
 
-class _TDir:
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
+class tdir:
+    def __new__(cls, *args, **kwargs):
+        if not kwargs and len(args) == 1 and callable(args[0]):
+            return _decorator(args[0])
+
+        obj = super(tdir, cls).__new__(cls)
+        obj.args = args
+        obj.kwargs = kwargs
+        return obj
 
     def __enter__(self):
-        # It's a context manager
-        self._tdir = tdir(*self.args, **self.kwargs)
-        return self._tdir.__enter__()
+        self._cm = _context_manager(*self.args, **self.kwargs)
+        return self._cm.__enter__()
 
     def __exit__(self, *args):
-        return self._tdir.__exit__(*args)
+        return self._cm.__exit__(*args)
 
     def __call__(self, *args, **kwargs):
-        # It's a decorator
-        return tdec(*self.args, **self.kwargs)(*args, **kwargs)
+        return _decorator(*self.args, **self.kwargs)(*args, **kwargs)
 
 
-def TDir(*args, **kwargs):
-    if not kwargs and len(args) == 1 and callable(args[0]):
-        return tdec(args[0])
-    return _TDir(*args, **kwargs)
+tdec = tdir  # DEPRECATED
 
 
 @contextlib.contextmanager
-def tdir(*args, cwd=True, **kwargs):
+def _context_manager(*args, cwd=True, **kwargs):
     """
     A context manager to create and fill a temporary directory.
 
@@ -132,7 +132,7 @@ def tdir(*args, cwd=True, **kwargs):
 
 
 @dek(methods=mock.patch.TEST_PREFIX)
-def tdec(func, *args, cwd=True, **kwargs):
+def _decorator(func, *args, cwd=True, **kwargs):
     """
     Decorate a function or ``unittest.TestCase`` so it runs in a populated
     temporary directory.
@@ -161,8 +161,7 @@ def tdec(func, *args, cwd=True, **kwargs):
         If it's a dictionary, its contents are used to recursively create and
         fill a subdirectory.
     """
-    with tdir(*args, cwd=cwd, **kwargs):
-        print('TEN', func)
+    with _context_manager(*args, cwd=cwd, **kwargs):
         func()
 
 

@@ -1,10 +1,9 @@
 from pathlib import Path
-from tdir import TDir, tdec as _tdec
+from tdir import tdec, tdir
 import sys
 import unittest
 
 CWD = Path().absolute()
-tdir = tdec = TDir
 
 
 class TestTdir(unittest.TestCase):
@@ -135,7 +134,7 @@ class TestTdirClass3(unittest.TestCase):
 
 
 class TestTdirClass4(unittest.TestCase):
-    @_tdec
+    @tdec
     def test_not_in_root_old(self):
         cwd = str(Path().absolute())
         assert cwd != CWD
