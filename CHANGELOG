@@ -1,3 +1,7 @@
+## v0.11.2 - 20/07/08
+
+* Include dek in install_requires in setup.py
+
 ## v0.11.1 - 20/07/06
 
 * Remove dependencies from setup.py
