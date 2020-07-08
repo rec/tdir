@@ -1,3 +1,4 @@
+from pathlib import Path
 from setuptools import setup
 
 _classifiers = [
@@ -20,6 +21,9 @@ def _version():
         return line.strip().split()[-1].strip("'")
 
 
+REQUIREMENTS = Path('requirements.txt').read_text().splitlines()
+
+
 if __name__ == '__main__':
     setup(
         name='tdir',
@@ -34,4 +38,5 @@ if __name__ == '__main__':
         classifiers=_classifiers,
         keywords=['testing', 'modules'],
         scripts=['tdir.py'],
+        install_requires=REQUIREMENTS,
     )
