@@ -6,7 +6,7 @@ Creates a temporary directory using tempfile.TemporaryDirectory and then
 fills it with files.  Great for tests!
 
 ``tdir`` is a context manager and decorator that runs functions or test
-  suites in a temporary directory filled with files
+suites in a temporary directory filled with files
 
 ``fill`` recursively fills a directory (temporary or not)
 
@@ -220,11 +220,14 @@ class _tdir:
         try:
             return globals()[name]
         except KeyError:
-            return super().__getattr__(name)
+            raise AttributeError(name)
 
     @functools.wraps(tdir)
     def __call__(self, *args, **kwargs):
         return tdir(*args, **kwargs)
 
 
-sys.modules[__name__] = _tdir()
+_td = sys.modules[__name__] = _tdir()
+_td.__all__ = __all__
+_td.__doc__ = __doc__
+_td._DOKS = globals()
