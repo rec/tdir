@@ -64,13 +64,12 @@ EXAMPLE: as a decorator
         ORIGINAL_PATH = Path().absolute()
 
 """
-from dek import dek
 from pathlib import Path
 from unittest.mock import patch
-import functools
+import clod
+import dek
 import os
 import shutil
-import sys
 import tempfile
 import traceback
 
@@ -215,19 +214,4 @@ def fill(root, *args, **kwargs):
             raise TypeError('Do not understand type %s of %s' % (v, type(v)))
 
 
-class _tdir:
-    def __getattr__(self, name):
-        try:
-            return globals()[name]
-        except KeyError:
-            raise AttributeError(name)
-
-    @functools.wraps(tdir)
-    def __call__(self, *args, **kwargs):
-        return tdir(*args, **kwargs)
-
-
-_td = sys.modules[__name__] = _tdir()
-_td.__all__ = __all__
-_td.__doc__ = __doc__
-_td._DOKS = globals()
+clod(tdir, __name__)
