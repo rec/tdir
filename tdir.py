@@ -66,17 +66,18 @@ EXAMPLE: as a decorator
 """
 from pathlib import Path
 from unittest.mock import patch
-import clod
 import dek
 import os
 import shutil
 import tempfile
 import traceback
+import xmod
 
 __all__ = 'tdir', 'tdec', 'fill'
 __version__ = '0.12.0'
 
 
+@xmod
 class tdir:
     """
     Set up a temporary directory, fill it with files, then tear it down at
@@ -212,6 +213,3 @@ def fill(root, *args, **kwargs):
 
         else:
             raise TypeError('Do not understand type %s of %s' % (v, type(v)))
-
-
-clod(tdir, __name__)
