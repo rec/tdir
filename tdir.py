@@ -5,10 +5,10 @@ r"""
 Creates a temporary directory using tempfile.TemporaryDirectory and then
 fills it with files.  Great for tests!
 
-``tdir`` is a context manager and decorator that runs functions or test
-suites in a temporary directory filled with files
+``tdir()`` is a context manager and decorator that runs functions or test
+suites in a temporary directory filled with files.
 
-``fill`` recursively fills a directory (temporary or not)
+``fill()`` recursively fills a directory (temporary or not).
 
 EXAMPLE: as a context manager
 
@@ -16,15 +16,30 @@ EXAMPLE: as a context manager
 
     import tdir
 
+    with tdir('hello'):
+        # Run in a tempdir
+        assert Path('hello').read_text() = 'hello\n'
+        Path('junk.txt').write_text('hello, world\n')
+
+    # The directory and the files are gone
+
+    # A more complex example:
     with tdir(
-        'one.txt', 'two.txt',
+        'one.txt',
         three='some information',
-        four=Path('/some/existing/file'),
-        subdirectory1={
+        four=Path('existing/file'),  # Copy a file into the tempdir
+        sub1={
             'file.txt': 'blank lines\n\n\n\n',
-            'subdirectory': ['a', 'b', 'c']
+            'sub2': [
+                'a', 'b', 'c'
+            ]
         },
     ):
+        assert Path('one.txt').exists()
+        assert Path('four').read_text() == Path('/existing/file').read_text()
+        assert Path('sub1/sub2/a').exists()
+
+    # All files gone!
 
 EXAMPLE: as a decorator
 
@@ -35,7 +50,7 @@ EXAMPLE: as a decorator
 
     @tdir
     def my_function():
-        # Do some work in a temporary directory
+        pass  # my_function() always operates in a temporary directory
 
 
     # Decorate a TestCase so each test runs in a new temporary directory
@@ -62,7 +77,6 @@ EXAMPLE: as a decorator
             assert Path().absolute() != self.ORIGINAL_PATH
 
         ORIGINAL_PATH = Path().absolute()
-
 """
 from pathlib import Path
 from unittest.mock import patch
@@ -73,7 +87,7 @@ import tempfile
 import traceback
 import xmod
 
-__all__ = 'tdir', 'tdec', 'fill'
+__all__ = 'tdir', 'fill'
 __version__ = '0.12.0'
 
 
@@ -91,18 +105,19 @@ class tdir:
         Files to put into the temporary directory.
         See the documentation for ``tdir.fill()``
 
-      cwd:
+      chdir:
         If True (the default), change the working directory to the tdir at
         the start of the operation and restore the original working directory
         at the end.
 
       methods:
-        Which methods on classes to decorate.  See
-        https://github.com/rec/dek/blob/master/README.rst\
-#dekdekdecorator-deferfalse-methodsnone
+        How to decorate classes.  The default only decorates class methods that
+        start with the string ``test`` just like e.g. ``unittest.mock.patch``
+        does.  See https://github.com/rec/dek/blob/master/\
+README.rst#dekdekdecorator-deferfalse-methodsnone
     """
 
-    def __new__(cls, *args, cwd=True, methods=patch.TEST_PREFIX, **kwargs):
+    def __new__(cls, *args, chdir=True, methods=patch.TEST_PREFIX, **kwargs):
         is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
         if is_decorator:
             decorator = args[0]
@@ -111,7 +126,7 @@ class tdir:
         obj = super(tdir, cls).__new__(cls)
         obj.args = args
         obj.kwargs = dict(kwargs)
-        obj.cwd = cwd
+        obj.chdir = chdir
 
         @dek(methods=methods)
         def call(func, *args, **kwargs):
@@ -126,29 +141,25 @@ class tdir:
         return obj
 
     def __enter__(self):
-        self.td = tempfile.TemporaryDirectory()
-        td = self.td.__enter__()
-
-        root = Path(td)
-        fill(root, *self.args, **self.kwargs)
-        if self.cwd:
+        self._td = tempfile.TemporaryDirectory()
+        self.cwd = Path(self._td.__enter__())
+        fill(self.cwd, *self.args, **self.kwargs)
+        if self.chdir:
             self.old_cwd = os.getcwd()
-            os.chdir(td)
+            os.chdir(self.cwd)
 
-        return root
+        return self.cwd
 
     def __exit__(self, *args):
-        try:
-            os.chdir(self.old_cwd)
-        except Exception:
-            traceback.print_exc()
-        return self.td.__exit__(*args)
+        if self.chdir:
+            try:
+                os.chdir(self.old_cwd)
+            except Exception:  # pragma: no cover
+                traceback.print_exc()
+        return self._td.__exit__(*args)
 
     def __call__(self, *args, **kwargs):
         return self._call(*args, **kwargs)
-
-
-tdec = tdir  # DEPRECATED
 
 
 def fill(root, *args, **kwargs):

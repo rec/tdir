@@ -14,7 +14,7 @@ class TestTdir(unittest.TestCase):
                 assert Path(i).read_text() == i + '\n'
 
     def test_simple(self):
-        with tdir('a', 'b', {'c': 'c'}, cwd=False) as td:
+        with tdir('a', 'b', {'c': 'c'}, chdir=False) as td:
             assert sorted(i.name for i in td.iterdir()) == ['a', 'b', 'c']
             for i in 'abc':
                 assert (td / i).read_text() == i + '\n'
