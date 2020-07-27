@@ -223,4 +223,4 @@ def fill(root, *args, **kwargs):
             fill(rk, *v)
 
         else:
-            raise TypeError('Do not understand type %s of %s' % (v, type(v)))
+            raise TypeError('Do not understand type %s=%s' % (k, v))

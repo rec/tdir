@@ -4,10 +4,10 @@
 Creates a temporary directory using tempfile.TemporaryDirectory and then
 fills it with files.  Great for tests!
 
-``tdir`` is a context manager and decorator that runs functions or test
-  suites in a temporary directory filled with files
+``tdir()`` is a context manager and decorator that runs functions or test
+suites in a temporary directory filled with files.
 
-``fill`` recursively fills a directory (temporary or not)
+``fill()`` recursively fills a directory (temporary or not).
 
 EXAMPLE: as a context manager
 
@@ -15,15 +15,30 @@ EXAMPLE: as a context manager
 
     import tdir
 
+    with tdir('hello'):
+        # Run in a tempdir
+        assert Path('hello').read_text() = 'hello\n'
+        Path('junk.txt').write_text('hello, world\n')
+
+    # The directory and the files are gone
+
+    # A more complex example:
     with tdir(
-        'one.txt', 'two.txt',
+        'one.txt',
         three='some information',
-        four=Path('/some/existing/file'),
-        subdirectory1={
+        four=Path('existing/file'),  # Copy a file into the tempdir
+        sub1={
             'file.txt': 'blank lines\n\n\n\n',
-            'subdirectory': ['a', 'b', 'c']
+            'sub2': [
+                'a', 'b', 'c'
+            ]
         },
     ):
+        assert Path('one.txt').exists()
+        assert Path('four').read_text() == Path('/existing/file').read_text()
+        assert Path('sub1/sub2/a').exists()
+
+    # All files gone!
 
 EXAMPLE: as a decorator
 
@@ -34,7 +49,7 @@ EXAMPLE: as a decorator
 
     @tdir
     def my_function():
-        # Do some work in a temporary directory
+        pass  # my_function() always operates in a temporary directory
 
 
     # Decorate a TestCase so each test runs in a new temporary directory
@@ -65,61 +80,10 @@ EXAMPLE: as a decorator
 API
 ---
 
-Class `tdir.tdir``
-~~~~~~~~~~~~~~~~~~
+Class ``tdir``
+~~~~~~~~~~~~~~~~~
 
-(`tdir.py, 81-149 <https://github.com/rec/tdir/blob/master/tdir.py#L81-L149>`_)
-
-Set up a temporary directory, fill it with files, then tear it down at
-the end of an operation.
-
-``tdir`` can be used either as a context manager, or a decorator that
-works on functions or classes.
-
-ARGUMENTS
-  args, kwargs:
-    Files to put into the temporary directory.
-    See the documentation for ``tdir.fill()``
-
-  cwd:
-    If True (the default), change the working directory to the tdir at
-    the start of the operation and restore the original working directory
-    at the end.
-
-  methods:
-    Which methods on classes to decorate.  See
-    https://github.com/rec/dek/blob/master/README.rst#dekdekdecorator-deferfalse-methodsnone
-
-``tdir.tdir.__new__(cls, *args, cwd=True, methods='test', **kwargs)``
-_____________________________________________________________________
-
-(`tdir.py, 105-127 <https://github.com/rec/tdir/blob/master/tdir.py#L105-L127>`_)
-
-Create and return a new object.  See help(type) for accurate signature.
-
-``tdir.tdir.__enter__(self)``
-_____________________________
-
-(`tdir.py, 128-139 <https://github.com/rec/tdir/blob/master/tdir.py#L128-L139>`_)
-
-
-``tdir.tdir.__exit__(self, *args)``
-___________________________________
-
-(`tdir.py, 140-146 <https://github.com/rec/tdir/blob/master/tdir.py#L140-L146>`_)
-
-
-``tdir.tdir.__call__(self, *args, **kwargs)``
-_____________________________________________
-
-(`tdir.py, 147-149 <https://github.com/rec/tdir/blob/master/tdir.py#L147-L149>`_)
-
-Call self as a function.
-
-Class `tdir.tdec``
-~~~~~~~~~~~~~~~~~~
-
-(`tdir.py, 81-149 <https://github.com/rec/tdir/blob/master/tdir.py#L81-L149>`_)
+(`tdir.py, 95-163 <https://github.com/rec/tdir/blob/master/tdir.py#L95-L163>`_)
 
 Set up a temporary directory, fill it with files, then tear it down at
 the end of an operation.
@@ -132,45 +96,20 @@ ARGUMENTS
     Files to put into the temporary directory.
     See the documentation for ``tdir.fill()``
 
-  cwd:
+  chdir:
     If True (the default), change the working directory to the tdir at
     the start of the operation and restore the original working directory
     at the end.
 
   methods:
-    Which methods on classes to decorate.  See
-    https://github.com/rec/dek/blob/master/README.rst#dekdekdecorator-deferfalse-methodsnone
-
-``tdir.tdec.__new__(cls, *args, cwd=True, methods='test', **kwargs)``
-_____________________________________________________________________
-
-(`tdir.py, 105-127 <https://github.com/rec/tdir/blob/master/tdir.py#L105-L127>`_)
-
-Create and return a new object.  See help(type) for accurate signature.
-
-``tdir.tdec.__enter__(self)``
-_____________________________
-
-(`tdir.py, 128-139 <https://github.com/rec/tdir/blob/master/tdir.py#L128-L139>`_)
-
-
-``tdir.tdec.__exit__(self, *args)``
-___________________________________
-
-(`tdir.py, 140-146 <https://github.com/rec/tdir/blob/master/tdir.py#L140-L146>`_)
-
-
-``tdir.tdec.__call__(self, *args, **kwargs)``
-_____________________________________________
-
-(`tdir.py, 147-149 <https://github.com/rec/tdir/blob/master/tdir.py#L147-L149>`_)
-
-Call self as a function.
+    How to decorate classes.  The default only decorates class methods that
+    start with the string ``test`` just like e.g. ``unittest.mock.patch``
+    does.  See https://github.com/rec/dek/blob/master/README.rst#dekdekdecorator-deferfalse-methodsnone
 
 ``tdir.fill(root, *args, **kwargs)``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-(`tdir.py, 154-216 <https://github.com/rec/tdir/blob/master/tdir.py#L154-L216>`_)
+(`tdir.py, 165-227 <https://github.com/rec/tdir/blob/master/tdir.py#L165-L227>`_)
 
 Recursively fills a directory.
 
@@ -198,4 +137,4 @@ ARGUMENTS
 
     If it's a Path, that file is copied to the target directory.
 
-(automatically generated by `doks <https://github.com/rec/doks/>`_ on 2020-07-10T16:03:56.532666)
+(automatically generated by `doks <https://github.com/rec/doks/>`_ on 2020-07-21T20:00:25.006413)

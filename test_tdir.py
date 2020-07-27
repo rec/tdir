@@ -140,11 +140,11 @@ class TestTdirClass3(unittest.TestCase):
 
 class TestTdirClass4(unittest.TestCase):
     @tdir
-    def test_not_in_root_YYY(self):
+    def test_not_in_root0(self):
         cwd = str(Path().absolute())
         assert cwd != CWD
 
-    def test_not_in_root_XXX(self):
+    def test_not_in_root1(self):
         @tdir
         def fn():
             cwd = str(Path().absolute())
