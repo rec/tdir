@@ -88,7 +88,7 @@ import traceback
 import xmod
 
 __all__ = 'tdir', 'fill'
-__version__ = '0.13.2'
+__version__ = '1.0.0'
 
 
 @xmod
