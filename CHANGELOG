@@ -1,3 +1,7 @@
+## v1.0.1 - 20/11/04
+
+* Change status to Production/Stable in setup.py
+
 ## v1.0.0 - 20/11/01
 
 * First release version
