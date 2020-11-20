@@ -2,28 +2,50 @@ r"""
 🗃 tdir - create and fill a temporary directory 🗃
 ======================================================
 
-Creates a temporary directory using tempfile.TemporaryDirectory and then
-fills it with files.  Great for tests!
+Run code inside a temporary directory filled with zero or more files.
 
-``tdir()`` is a context manager and decorator that runs functions or test
-suites in a temporary directory filled with files.
+Very convenient for writing tests: you can decorate individual tests or a whole
+test suite.
 
-``fill()`` recursively fills a directory (temporary or not).
+`tdir()` runs code in a temporary directory pre-filled with files: it can
+either be used as a context manager, or a decorator for functions or classes.
+
+`tdir.fill()` is a tiny function that recursively fills a directory.
 
 EXAMPLE: as a context manager
 
 .. code-block:: python
 
+    from pathlib import Path
     import tdir
 
-    with tdir('hello'):
-        # Run in a tempdir
+    cwd = Path.cwd()
+
+    # Simplest invocation.
+
+    with tdir():
+       # Do a lot of things in a temporary directory
+
+    # Everything is gone!
+
+    # With a single file
+    with tdir('hello') as td:
+        # The file `hello` is there
         assert Path('hello').read_text() = 'hello\n'
+
+        # We're in a temporary directory
+        assert td == Path.cwd()
+        assert td != cwd
+
+        # Write some other file
         Path('junk.txt').write_text('hello, world\n')
 
-    # The directory and the files are gone
+    # The temporary directory and the files are gone
+    assert not td.exists()
+    assert cwd == Path.cwd()
 
     # A more complex example:
+    #
     with tdir(
         'one.txt',
         three='some information',
@@ -46,6 +68,7 @@ EXAMPLE: as a decorator
 .. code-block:: python
 
     from pathlib import Path
+    import tdir
     import unittest
 
     @tdir
@@ -54,6 +77,7 @@ EXAMPLE: as a decorator
 
 
     # Decorate a TestCase so each test runs in a new temporary directory
+    # with two files
     @tdir('a', foo='bar')
     class MyTest(unittest.TestCast):
         def test_something(self):
@@ -63,14 +87,14 @@ EXAMPLE: as a decorator
             assert Path('foo').read_text() = 'bar\n'
 
 
-    # Decorate single test in a unitttest
     class MyTest2(unittest.TestCast):
+        # Decorate just one test in a unitttest
         @tdir(foo='bar', baz=bytes(range(4)))  # binary files are possible
         def test_something(self):
             assert Path('foo').read_text() = 'bar\n'
             assert Path('baz').read_bytes() = bytes(range(4)))
 
-        # Run in an empty temporary directory
+        # Run test in an empty temporary directory
         @tdir
         def test_something_else(self):
             assert not Path('a').exists()
@@ -97,23 +121,27 @@ class tdir:
     Set up a temporary directory, fill it with files, then tear it down at
     the end of an operation.
 
-    ``tdir`` can be used either as a context manager, or a decorator that
-    works on functions or classes.
+    `tdir` can be used either as a context manager, or a decorator for
+    functions or classes.
 
     ARGUMENTS
       args, kwargs:
         Files to put into the temporary directory.
-        See the documentation for ``tdir.fill()``
+        See the documentation for `tdir.fill()`
 
       chdir:
-        If True (the default), change the working directory to the tdir at
+        If true (the default), change the working directory to the tdir at
         the start of the operation and restore the original working directory
-        at the end.
+        at the end.  Otherwise, don't change or return the working directory.
 
       methods:
-        How to decorate classes.  The default only decorates class methods that
-        start with the string ``test`` just like e.g. ``unittest.mock.patch``
-        does.  See https://github.com/rec/dek/blob/master/\
+        The methods argument tells how to decorate class methods when
+        decorating a class.
+
+        The default decorates only class methods that start with the string
+        `test` - exactly like `unittest.mock.patch` does.
+
+        See https://github.com/rec/dek/blob/master/\
 README.rst#dekdekdecorator-deferfalse-methodsnone
     """
 
@@ -164,7 +192,7 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
 
 def fill(root, *args, **kwargs):
     """
-    Recursively fills a directory.
+    Recursively fills a directory from file names and optional values.
 
     ARGUMENTS
       root:
@@ -178,7 +206,8 @@ def fill(root, *args, **kwargs):
         For dictionaries, the contents are used to recursively create and fill
         the directory.
 
-        For Paths, the file is copied into the target directory
+        For Paths, that file is copied into the target directory under the same
+        name.
 
       kwargs:
         A dictionary mapping file or directory names to values.
@@ -188,7 +217,8 @@ def fill(root, *args, **kwargs):
         If it's a dictionary, its contents are used to recursively create and
         fill a subdirectory.
 
-        If it's a Path, that file is copied to the target directory.
+        If it's a Path, that file is copied to the target directory but with
+        the key as its name.
     """
     for a in args:
         if isinstance(a, str):
