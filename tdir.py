@@ -107,6 +107,7 @@ from unittest.mock import patch
 import dek
 import os
 import shutil
+import sys
 import tempfile
 import traceback
 import xmod
@@ -132,7 +133,7 @@ class tdir:
       chdir:
         If true (the default), change the working directory to the tdir at
         the start of the operation and restore the original working directory
-        at the end.  Otherwise, don't change or return the working directory.
+        at the end.  Otherwise, don't change or restore the working directory.
 
       methods:
         The methods argument tells how to decorate class methods when
@@ -143,9 +144,26 @@ class tdir:
 
         See https://github.com/rec/dek/blob/master/\
 README.rst#dekdekdecorator-deferfalse-methodsnone
+
+      use_dir:
+        If non-empty, `use_dir` is used instead of a temp directory (and is
+        not removed at the end) - for example, `use_dir='.'` puts everything in
+        the current directory.
+
+      save:
+        If set to true, the temp directory is not deleted at end and its name
+        is printed to `sys.stderr`
     """
 
-    def __new__(cls, *args, chdir=True, methods=patch.TEST_PREFIX, **kwargs):
+    def __new__(
+        cls,
+        *args,
+        chdir=True,
+        methods=patch.TEST_PREFIX,
+        use_dir=None,
+        save=False,
+        **kwargs,
+    ):
         is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
         if is_decorator:
             decorator = args[0]
@@ -155,6 +173,8 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
         obj.args = args
         obj.kwargs = dict(kwargs)
         obj.chdir = chdir
+        obj.use_dir = use_dir
+        obj.save = save
 
         @dek(methods=methods)
         def call(func, *args, **kwargs):
@@ -169,22 +189,31 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
         return obj
 
     def __enter__(self):
-        self._td = tempfile.TemporaryDirectory()
-        self.cwd = Path(self._td.__enter__())
-        fill(self.cwd, *self.args, **self.kwargs)
-        if self.chdir:
-            self.old_cwd = os.getcwd()
-            os.chdir(self.cwd)
+        if self.use_dir:
+            self.directory = self.use_dir
+        else:
+            self._td = tempfile.TemporaryDirectory()
+            self.directory = Path(self._td.__enter__())
 
-        return self.cwd
+        fill(self.directory, *self.args, **self.kwargs)
+
+        if self.chdir:
+            self.old_directory = os.getcwd()
+            os.chdir(self.directory)
+
+        return self.directory
 
     def __exit__(self, *args):
         if self.chdir:
             try:
-                os.chdir(self.old_cwd)
+                os.chdir(self.old_directory)
             except Exception:  # pragma: no cover
                 traceback.print_exc()
-        return self._td.__exit__(*args)
+
+        if self.save:
+            print(self.directory, file=sys.stderr)
+        elif not self.use_dir:
+            self._td.__exit__(*args)
 
     def __call__(self, *args, **kwargs):
         return self._call(*args, **kwargs)
