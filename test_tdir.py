@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+import shutil
 import sys
 import tdir
 import unittest
@@ -64,6 +66,32 @@ class TestTdir(unittest.TestCase):
                 pass
         assert m.exception.args[0].startswith('Do not understand type')
 
+    @tdir
+    def test_usedir(self):
+        cwd = os.getcwd()
+        os.mkdir('one')
+
+        with tdir():
+            Path('one.txt').write_text('ONE')
+            assert os.getcwd() != os.path.join(cwd, 'one')
+
+        assert not Path('one/one.txt').exists()
+
+        with tdir(use_dir='one'):
+            Path('one.txt').write_text('ONE')
+            assert os.getcwd() == os.path.join(cwd, 'one')
+
+        assert Path('one/one.txt').read_text() == 'ONE'
+
+    def test_save(self):
+        with tdir(save=True) as td:
+            Path('one.txt').write_text('ONE')
+
+        assert Path(os.path.join(td, 'one.txt')).read_text() == 'ONE'
+        shutil.rmtree(td)
+
+
+class TestBig(unittest.TestCase):
     def test_big(self):
         items = {
             'foo': {
