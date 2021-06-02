@@ -202,7 +202,7 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
                 if f.is_dir():
                     shutil.rmtree(f)
                 else:
-                    f.remove()
+                    f.unlink()
 
         fill(self.directory, *self.args, **self.kwargs)
 
