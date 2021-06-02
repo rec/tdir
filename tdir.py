@@ -198,7 +198,7 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
             self.directory = Path(self._td.__enter__())
 
         if self.clear:
-            for f in self.director.iterdir():
+            for f in self.directory.iterdir():
                 if f.is_dir():
                     shutil.rmtree(f)
                 else:
