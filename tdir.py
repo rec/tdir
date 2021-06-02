@@ -162,6 +162,7 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
         methods=patch.TEST_PREFIX,
         use_dir=None,
         save=False,
+        clear=False,
         **kwargs,
     ):
         is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
@@ -175,6 +176,7 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
         obj.chdir = chdir
         obj.use_dir = use_dir
         obj.save = save
+        obj.clear = clear
 
         @dek(methods=methods)
         def call(func, *args, **kwargs):
@@ -194,6 +196,13 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
         else:
             self._td = tempfile.TemporaryDirectory()
             self.directory = Path(self._td.__enter__())
+
+        if self.clear:
+            for f in self.director.iterdir():
+                if f.is_dir():
+                    shutil.rmtree(f)
+                else:
+                    f.remove()
 
         fill(self.directory, *self.args, **self.kwargs)
 
