@@ -192,7 +192,7 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
 
     def __enter__(self):
         if self.use_dir:
-            self.directory = self.use_dir
+            self.directory = Path(self.use_dir)
         else:
             self._td = tempfile.TemporaryDirectory()
             self.directory = Path(self._td.__enter__())
