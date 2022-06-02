@@ -279,7 +279,8 @@ def fill(root, *args, **kwargs):
             rk.write_text(v)
 
         elif isinstance(v, Path):
-            shutil.copyfile(str(v), str(rk))
+            copy = shutil.copytree if v.is_dir() else shutil.copyfile
+            copy(str(v), str(rk))
 
         elif isinstance(v, (bytes, bytearray)):
             rk.write_bytes(v)
