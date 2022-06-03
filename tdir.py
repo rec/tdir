@@ -228,12 +228,12 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
         return self._call(*args, **kwargs)
 
 
-def fill(root, *args, **kwargs):
+def fill(_root, *args, **kwargs):
     """
     Recursively fills a directory from file names and optional values.
 
     ARGUMENTS
-      root:
+      _root:
         The root directory to fill
 
       args:
@@ -265,10 +265,10 @@ def fill(root, *args, **kwargs):
             a = {a.name: a}
         elif not isinstance(a, dict):
             raise TypeError('Do not understand type %s of %s' % (a, type(a)))
-        fill(root, **a)
+        fill(_root, **a)
 
     for k, v in kwargs.items():
-        rk = Path(root) / k
+        rk = Path(_root) / k
         is_dir = isinstance(v, (dict, list, tuple))
         to_make = rk if is_dir else rk.parent
         to_make.mkdir(parents=True, exist_ok=True)

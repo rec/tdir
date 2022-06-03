@@ -92,8 +92,8 @@ class TestTdir(unittest.TestCase):
 
     def test_copy_dir(self):
         root = Path(__file__).parent
-        with tdir(tdir=root) as td:
-            copied = sorted(f.name for f in (td / 'tdir').iterdir())
+        with tdir(root=root) as td:
+            copied = sorted(f.name for f in (td / 'root').iterdir())
             original = sorted(f.name for f in root.iterdir())
             assert copied == original
 
