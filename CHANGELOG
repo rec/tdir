@@ -1,3 +1,7 @@
+## v1.4 - 22/08/06
+
+* Add threading.get_ident(), os.getpid() to dirname
+
 ## v1.3.1 - 22/06/03
 
 * Hide a parameter name from outside
