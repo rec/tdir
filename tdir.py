@@ -109,6 +109,7 @@ import os
 import shutil
 import sys
 import tempfile
+import threading
 import traceback
 import xmod
 
@@ -194,7 +195,8 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
         if self.use_dir:
             self.directory = Path(self.use_dir)
         else:
-            self._td = tempfile.TemporaryDirectory()
+            suffix = f'-{threading.get_ident()}-{os.getpid()}'
+            self._td = tempfile.TemporaryDirectory(suffix=suffix)
             self.directory = Path(self._td.__enter__())
 
         if self.clear:
