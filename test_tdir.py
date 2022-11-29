@@ -207,3 +207,20 @@ class TestTdirClassMethods(unittest.TestCase):
     def test_not(self):
         cwd = Path().absolute()
         assert cwd == CWD
+
+
+class TestRecursive(unittest.TestCase):
+    def test_recursive(self):
+        d1 = Path().absolute()
+        with tdir() as d2:
+            f2 = d2 / 'one.txt'
+            f2.write_text('one.txt')
+
+            with tdir() as d3:
+                f3 = d3 / 'two.txt'
+                f3.write_text('two.txt')
+                assert all(p.is_absolute() for p in (d1, d2, d3))
+                assert d1 != d2 != d3 != d1
+                assert f2.exists() and f3.exists()
+            assert f2.exists() and not f3.exists()
+        assert not f2.exists() and not f3.exists()
