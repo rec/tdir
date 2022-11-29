@@ -171,12 +171,13 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
             args = ()
 
         obj = super(tdir, cls).__new__(cls)
+
         obj.args = args
-        obj.kwargs = dict(kwargs)
         obj.chdir = chdir
-        obj.use_dir = use_dir
-        obj.save = save
         obj.clear = clear
+        obj.kwargs = kwargs
+        obj.save = save
+        obj.use_dir = use_dir
 
         @dek(methods=methods)
         def call(func, *args, **kwargs):
