@@ -255,13 +255,17 @@ def fill(_root, *args, **kwargs):
         the key as its name.
     """
     for a in args:
-        if isinstance(a, str):
-            a = {a.strip(): a}
+        if isinstance(a, dict):
+            fill(_root, **a)
+        elif isinstance(a, str):
+            fill(_root, **{a.strip(): a}_
         elif isinstance(a, Path):
-            a = {a.name: a}
-        elif not isinstance(a, dict):
+            fill(_root, **{a.name: a})
+        elif isinstance(a, (list, tuple)):
+            for i in a:
+                fill(_root, a)
+        else:
             raise TypeError('Do not understand type %s of %s' % (a, type(a)))
-        fill(_root, **a)
 
     for k, v in kwargs.items():
         rk = Path(_root) / k
