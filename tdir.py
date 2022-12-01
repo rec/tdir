@@ -222,7 +222,8 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
                 traceback.print_exc()
 
         if self.save:
-            print(self.directory, file=sys.stderr)
+            msg = f'🗃 tdir saving {self.directory.absolute()} 🗃'
+            print(msg, file=sys.stderr)
         elif not self.use_dir:
             self._td.__exit__(*args)
 
