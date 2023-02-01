@@ -9,7 +9,7 @@ auto = true
 [tool.poetry]
 name = "tdir"
 version = "1.4.1"
-description = "🗃 tdir - create and fill a temporary directory 🗃"
+description = "🗃 Create and fill a temporary directory 🗃"
 authors = ["Tom Ritchford <tom@swirly.com>"]
 license = "MIT"
 readme = "README.rst"
