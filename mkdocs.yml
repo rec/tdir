@@ -1,0 +1,19 @@
+site_name: '🗃: `tdir`: Create and fill a temporary directory 🗃'
+
+theme:
+  name: material
+
+  palette:
+    primary:
+      'pink'
+
+  font:
+    text:
+      Roboto
+    code:
+      Roboto Mono
+
+extra_css: [extra.css]
+
+plugins:
+    - mkdocstrings
