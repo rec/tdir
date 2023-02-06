@@ -1,0 +1,928 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+    
+    
+      
+        <title>🗃: `tdir`: Create and fill a temporary directory 🗃</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.0d440cfe.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="extra.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="pink" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tdir-create-and-fill-a-temporary-directory" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="🗃: `tdir`: Create and fill a temporary directory 🗃" class="md-header__button md-logo" aria-label="🗃: `tdir`: Create and fill a temporary directory 🗃" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            🗃: `tdir`: Create and fill a temporary directory 🗃
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              🗃: `tdir`: Create and fill a temporary directory 🗃
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="🗃: `tdir`: Create and fill a temporary directory 🗃" class="md-nav__button md-logo" aria-label="🗃: `tdir`: Create and fill a temporary directory 🗃" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    🗃: `tdir`: Create and fill a temporary directory 🗃
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          🗃: `tdir`: Create and fill a temporary directory 🗃
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        🗃: `tdir`: Create and fill a temporary directory 🗃
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tdir" class="md-nav__link">
+    tdir
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tdir--tdir-create-and-fill-a-temporary-directory" class="md-nav__link">
+    🗃 tdir - create and fill a temporary directory 🗃
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tdir.tdir" class="md-nav__link">
+    tdir
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tdir.fill" class="md-nav__link">
+    fill()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tdir" class="md-nav__link">
+    tdir
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tdir--tdir-create-and-fill-a-temporary-directory" class="md-nav__link">
+    🗃 tdir - create and fill a temporary directory 🗃
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tdir.tdir" class="md-nav__link">
+    tdir
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tdir.fill" class="md-nav__link">
+    fill()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="tdir-create-and-fill-a-temporary-directory">🗃: <code>tdir</code>: Create and fill a temporary directory 🗃</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+<a id="tdir"></a>
+  <div class="doc doc-contents first">
+  
+      <h2 id="tdir--tdir-create-and-fill-a-temporary-directory">🗃 tdir - create and fill a temporary directory 🗃</h2>
+<p>Run code inside a temporary directory filled with zero or more files.</p>
+<p>Very convenient for writing tests: you can decorate individual tests or a whole
+test suite.</p>
+<p><code>tdir()</code> runs code in a temporary directory pre-filled with files: it can
+either be used as a context manager, or a decorator for functions or classes.</p>
+<p><code>tdir.fill()</code> is a tiny function that recursively fills a directory.</p>
+<p>EXAMPLE: as a context manager</p>
+<p>.. code-block:: python</p>
+<pre><code>from pathlib import Path
+import tdir
+
+cwd = Path.cwd()
+
+# Simplest invocation.
+
+with tdir():
+   # Do a lot of things in a temporary directory
+
+# Everything is gone!
+
+# With a single file
+with tdir('hello') as td:
+    # The file `hello` is there
+    assert Path('hello').read_text() = 'hello\n'
+
+    # We're in a temporary directory
+    assert td == Path.cwd()
+    assert td != cwd
+
+    # Write some other file
+    Path('junk.txt').write_text('hello, world\n')
+
+# The temporary directory and the files are gone
+assert not td.exists()
+assert cwd == Path.cwd()
+
+# A more complex example:
+#
+with tdir(
+    'one.txt',
+    three='some information',
+    four=Path('existing/file'),  # Copy a file into the tempdir
+    sub1={
+        'file.txt': 'blank lines\n\n\n\n',
+        'sub2': [
+            'a', 'b', 'c'
+        ]
+    },
+):
+    assert Path('one.txt').exists()
+    assert Path('four').read_text() == Path('/existing/file').read_text()
+    assert Path('sub1/sub2/a').exists()
+
+# All files gone!
+</code></pre>
+<p>EXAMPLE: as a decorator</p>
+<p>.. code-block:: python</p>
+<pre><code>from pathlib import Path
+import tdir
+import unittest
+
+@tdir
+def my_function():
+    pass  # my_function() always operates in a temporary directory
+
+
+# Decorate a TestCase so each test runs in a new temporary directory
+# with two files
+@tdir('a', foo='bar')
+class MyTest(unittest.TestCast):
+    def test_something(self):
+        assert Path('a').read_text() = 'a\n'
+
+    def test_something_else(self):
+        assert Path('foo').read_text() = 'bar\n'
+
+
+class MyTest2(unittest.TestCast):
+    # Decorate just one test in a unitttest
+    @tdir(foo='bar', baz=bytes(range(4)))  # binary files are possible
+    def test_something(self):
+        assert Path('foo').read_text() = 'bar\n'
+        assert Path('baz').read_bytes() = bytes(range(4)))
+
+    # Run test in an empty temporary directory
+    @tdir
+    def test_something_else(self):
+        assert not Path('a').exists()
+        assert Path().absolute() != self.ORIGINAL_PATH
+
+    ORIGINAL_PATH = Path().absolute()
+</code></pre>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="tdir.tdir" class="doc doc-heading">
+        <code>tdir</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Set up a temporary directory, fill it with files, then tear it down at
+the end of an operation.</p>
+<p><code>tdir</code> can be used either as a context manager, or a decorator for
+functions or classes.</p>
+<p>ARGUMENTS
+  args, kwargs:
+    Files to put into the temporary directory.
+    See the documentation for <code>tdir.fill()</code></p>
+<p>chdir:
+    If true (the default), change the working directory to the tdir at
+    the start of the operation and restore the original working directory
+    at the end.  Otherwise, don't change or restore the working directory.</p>
+<p>methods:
+    The methods argument tells how to decorate class methods when
+    decorating a class.</p>
+<pre><code>The default decorates only class methods that start with the string
+`test` - exactly like `unittest.mock.patch` does.
+
+See https://github.com/rec/dek/blob/master/README.rst#dekdekdecorator-deferfalse-methodsnone
+</code></pre>
+<p>use_dir:
+    If non-empty, <code>use_dir</code> is used instead of a temp directory (and is
+    not removed at the end) - for example, <code>use_dir='.'</code> puts everything in
+    the current directory.</p>
+<p>save:
+    If set to true, the temp directory is not deleted at end and its name
+    is printed to <code>sys.stderr</code></p>
+
+
+        <details class="quote">
+          <summary>Source code in <code>tdir/tdir.py</code></summary>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@xmod</span>
+<span class="k">class</span> <span class="nc">tdir</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set up a temporary directory, fill it with files, then tear it down at</span>
+<span class="sd">    the end of an operation.</span>
+
+<span class="sd">    `tdir` can be used either as a context manager, or a decorator for</span>
+<span class="sd">    functions or classes.</span>
+
+<span class="sd">    ARGUMENTS</span>
+<span class="sd">      args, kwargs:</span>
+<span class="sd">        Files to put into the temporary directory.</span>
+<span class="sd">        See the documentation for `tdir.fill()`</span>
+
+<span class="sd">      chdir:</span>
+<span class="sd">        If true (the default), change the working directory to the tdir at</span>
+<span class="sd">        the start of the operation and restore the original working directory</span>
+<span class="sd">        at the end.  Otherwise, don&#39;t change or restore the working directory.</span>
+
+<span class="sd">      methods:</span>
+<span class="sd">        The methods argument tells how to decorate class methods when</span>
+<span class="sd">        decorating a class.</span>
+
+<span class="sd">        The default decorates only class methods that start with the string</span>
+<span class="sd">        `test` - exactly like `unittest.mock.patch` does.</span>
+
+<span class="sd">        See https://github.com/rec/dek/blob/master/\</span>
+<span class="sd">README.rst#dekdekdecorator-deferfalse-methodsnone</span>
+
+<span class="sd">      use_dir:</span>
+<span class="sd">        If non-empty, `use_dir` is used instead of a temp directory (and is</span>
+<span class="sd">        not removed at the end) - for example, `use_dir=&#39;.&#39;` puts everything in</span>
+<span class="sd">        the current directory.</span>
+
+<span class="sd">      save:</span>
+<span class="sd">        If set to true, the temp directory is not deleted at end and its name</span>
+<span class="sd">        is printed to `sys.stderr`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">chdir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">methods</span><span class="o">=</span><span class="n">patch</span><span class="o">.</span><span class="n">TEST_PREFIX</span><span class="p">,</span>
+        <span class="n">use_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">clear</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">is_decorator</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">callable</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span>
+        <span class="k">if</span> <span class="n">is_decorator</span><span class="p">:</span>
+            <span class="n">decorator</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">()</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">tdir</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">chdir</span> <span class="o">=</span> <span class="n">chdir</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">clear</span> <span class="o">=</span> <span class="n">clear</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="n">save</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">use_dir</span> <span class="o">=</span> <span class="n">use_dir</span>
+
+        <span class="nd">@dek</span><span class="p">(</span><span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">_call</span> <span class="o">=</span> <span class="n">call</span>
+
+        <span class="k">if</span> <span class="n">is_decorator</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="p">(</span><span class="n">decorator</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">use_dir</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;-</span><span class="si">{</span><span class="n">threading</span><span class="o">.</span><span class="n">get_ident</span><span class="p">()</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_td</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_td</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+        <span class="n">fill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chdir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">old_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chdir</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">old_directory</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;🗃 tdir saving </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="si">}</span><span class="s1"> 🗃&#39;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_td</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+        </details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="tdir.fill" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fill</span><span class="p">(</span><span class="n">_root</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Recursively fills a directory from file names and optional values.</p>
+<p>ARGUMENTS
+  _root:
+    The root directory to fill</p>
+<p>args:
+    A list of strings, dictionaries or Paths.</p>
+<pre><code>For strings, a file is created with that string as name and contents.
+
+For dictionaries, the contents are used to recursively create and fill
+the directory.
+
+For Paths, that file is copied into the target directory under the same
+name.
+</code></pre>
+<p>kwargs:
+    A dictionary mapping file or directory names to values.</p>
+<pre><code>If the key's value is a string it is used to file a file of that name.
+
+If it's a dictionary, its contents are used to recursively create and
+fill a subdirectory.
+
+If it's a Path, that file is copied to the target directory but with
+the key as its name.
+</code></pre>
+
+      <details class="quote">
+        <summary>Source code in <code>tdir/tdir.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="n">_root</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively fills a directory from file names and optional values.</span>
+
+<span class="sd">    ARGUMENTS</span>
+<span class="sd">      _root:</span>
+<span class="sd">        The root directory to fill</span>
+
+<span class="sd">      args:</span>
+<span class="sd">        A list of strings, dictionaries or Paths.</span>
+
+<span class="sd">        For strings, a file is created with that string as name and contents.</span>
+
+<span class="sd">        For dictionaries, the contents are used to recursively create and fill</span>
+<span class="sd">        the directory.</span>
+
+<span class="sd">        For Paths, that file is copied into the target directory under the same</span>
+<span class="sd">        name.</span>
+
+<span class="sd">      kwargs:</span>
+<span class="sd">        A dictionary mapping file or directory names to values.</span>
+
+<span class="sd">        If the key&#39;s value is a string it is used to file a file of that name.</span>
+
+<span class="sd">        If it&#39;s a dictionary, its contents are used to recursively create and</span>
+<span class="sd">        fill a subdirectory.</span>
+
+<span class="sd">        If it&#39;s a Path, that file is copied to the target directory but with</span>
+<span class="sd">        the key as its name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span> <span class="n">a</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">a</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Do not understand type </span><span class="si">%s</span><span class="s1"> of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+        <span class="n">fill</span><span class="p">(</span><span class="n">_root</span><span class="p">,</span> <span class="o">**</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">rk</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">k</span>
+        <span class="n">is_dir</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+        <span class="n">to_make</span> <span class="o">=</span> <span class="n">rk</span> <span class="k">if</span> <span class="n">is_dir</span> <span class="k">else</span> <span class="n">rk</span><span class="o">.</span><span class="n">parent</span>
+        <span class="n">to_make</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+                <span class="n">v</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">rk</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">copy</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="k">else</span> <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span>
+            <span class="n">copy</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">rk</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
+            <span class="n">rk</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">fill</span><span class="p">(</span><span class="n">rk</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">fill</span><span class="p">(</span><span class="n">rk</span><span class="p">,</span> <span class="o">*</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Do not understand type </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      
+    
+  </body>
+</html>
