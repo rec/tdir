@@ -27,7 +27,7 @@ flake8 = "5.0.4"
 
 
 [tool.multi]
-multi = ["release"]
+tags = ["working"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
