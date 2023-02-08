@@ -14,7 +14,6 @@ either be used as a context manager, or a decorator for functions or classes.
 
 EXAMPLE: as a context manager
 
-.. code-block:: python
 
     from pathlib import Path
     import tdir
@@ -65,7 +64,6 @@ EXAMPLE: as a context manager
 
 EXAMPLE: as a decorator
 
-.. code-block:: python
 
     from pathlib import Path
     import tdir
