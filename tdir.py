@@ -112,7 +112,15 @@ __all__ = 'tdir', 'fill'
 
 
 @xmod
-class tdir:
+def tdir(
+    *args,
+    chdir: bool = True,
+    methods: str = patch.TEST_PREFIX,
+    use_dir: str = '',
+    save: bool = False,
+    clear: bool = False,
+    **kwargs,
+):
     """
     Set up a temporary directory, fill it with files, then tear it down at
     the end of an operation.
@@ -147,41 +155,34 @@ class tdir:
         is printed to `sys.stderr`
     """
 
-    def __new__(
-        cls,
-        *args,
-        chdir: bool = True,
-        methods: str = patch.TEST_PREFIX,
-        use_dir: str = '',
-        save: bool = False,
-        clear: bool = False,
-        **kwargs,
-    ):
-        is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
-        if is_decorator:
-            decorator = args[0]
-            args = ()
+    is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
+    if is_decorator:
+        decorator = args[0]
+        args = ()
 
-        obj = super(tdir, cls).__new__(cls)
+    obj = Tdir(args, chdir, clear, kwargs, save, use_dir)
 
-        obj.args = args
-        obj.chdir = chdir
-        obj.clear = clear
-        obj.kwargs = kwargs
-        obj.save = save
-        obj.use_dir = use_dir
+    @dek(methods=methods)
+    def call(func, *args, **kwargs):
+        with obj:
+            func(*args, **kwargs)
 
-        @dek(methods=methods)
-        def call(func, *args, **kwargs):
-            with obj:
-                func(*args, **kwargs)
+    obj._call = call
 
-        obj._call = call
+    if is_decorator:
+        return obj(decorator)
 
-        if is_decorator:
-            return obj(decorator)
+    return obj
 
-        return obj
+
+class Tdir:
+    def __init__(self, args, chdir, clear, kwargs, save, use_dir):
+        self.args = args
+        self.chdir = chdir
+        self.clear = clear
+        self.kwargs = kwargs
+        self.save = save
+        self.use_dir = use_dir
 
     def __enter__(self):
         if self.use_dir:
