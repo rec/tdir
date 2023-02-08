@@ -1,6 +1,5 @@
 r"""
-🗃 tdir - create and fill a temporary directory 🗃
-======================================================
+# 🗃 tdir - create and fill a temporary directory 🗃
 
 Run code inside a temporary directory filled with zero or more files.
 
@@ -12,8 +11,7 @@ either be used as a context manager, or a decorator for functions or classes.
 
 `tdir.fill()` is a tiny function that recursively fills a directory.
 
-EXAMPLE: as a context manager
-
+## Example: as a context manager
 
     from pathlib import Path
     import tdir
@@ -62,8 +60,7 @@ EXAMPLE: as a context manager
 
     # All files gone!
 
-EXAMPLE: as a decorator
-
+## Example: as a decorator
 
     from pathlib import Path
     import tdir
@@ -140,9 +137,6 @@ class tdir:
         The default decorates only class methods that start with the string
         `test` - exactly like `unittest.mock.patch` does.
 
-        See https://github.com/rec/dek/blob/master/\
-README.rst#dekdekdecorator-deferfalse-methodsnone
-
       use_dir:
         If non-empty, `use_dir` is used instead of a temp directory (and is
         not removed at the end) - for example, `use_dir='.'` puts everything in
@@ -156,11 +150,11 @@ README.rst#dekdekdecorator-deferfalse-methodsnone
     def __new__(
         cls,
         *args,
-        chdir=True,
-        methods=patch.TEST_PREFIX,
-        use_dir=None,
-        save=False,
-        clear=False,
+        chdir: bool = True,
+        methods: str = patch.TEST_PREFIX,
+        use_dir: str = '',
+        save: bool = False,
+        clear: bool = False,
         **kwargs,
     ):
         is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
