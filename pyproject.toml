@@ -1,7 +1,7 @@
 [tool.black]
-line-length = 79
+line-length = 88
 skip-string-normalization = true
-target-version = ['py37']
+target-version = ["py38"]
 
 [tool.doks]
 auto = true
@@ -13,6 +13,7 @@ description = "🗃 Create and fill a temporary directory 🗃"
 authors = ["Tom Ritchford <tom@swirly.com>"]
 license = "MIT"
 readme = "README.md"
+include = ["tdir.pyi"]
 
 [tool.poetry.dependencies]
 python = ">=3.8"
@@ -24,17 +25,19 @@ coverage = "*"
 doks = "*"
 pytest = "*"
 flake8 = "*"
+black = "*"
+isort = "*"
+mypy = "*"
+ruff = "*"
 
-
-[tool.coverage]
 [tool.coverage.run]
-branch = "True"
-source = "tdir"
+branch = true
+source = ["tdir"]
 
 [tool.coverage.report]
-fail_under = "100"
-skip_covered = "True"
-exclude_lines = ["", "pragma: no cover", "if False:", "if __name__ == .__main__.:", "raise NotImplementedError"]
+fail_under = "93"
+skip_covered = true
+exclude_lines = ["pragma: no cover", "if False:", "if __name__ == .__main__.:", "raise NotImplementedError"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
