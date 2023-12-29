@@ -1,10 +1,12 @@
-from pathlib import Path
 import os
-import pytest
 import shutil
 import sys
-import tdir
 import unittest
+from pathlib import Path
+
+import pytest
+
+import tdir
 
 CWD = Path().absolute()
 
@@ -128,8 +130,8 @@ def test_big():
 
         try:
             import bang
-            import foo.toast
             import bar.toast
+            import foo.toast
 
         finally:
             sys.path[:] = sys_path
@@ -146,8 +148,8 @@ def test_big():
 
         try:
             import bang
-            import foo.toast
             import bar.toast
+            import foo.toast
 
         finally:
             sys.path[:] = sys_path

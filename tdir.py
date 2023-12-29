@@ -97,30 +97,38 @@ either be used as a context manager, or a decorator for functions or classes.
 
         ORIGINAL_PATH = Path().absolute()
 """
-from pathlib import Path
-from unittest.mock import patch
-import dek
+from __future__ import annotations
+
+import dataclasses as dc
 import os
 import shutil
 import sys
 import tempfile
 import threading
 import traceback
+import typing as t
+from pathlib import Path
+from types import TracebackType
+from unittest.mock import patch
+
+import dek
 import xmod
 
 __all__ = 'tdir', 'fill'
 
+Arg = t.Union[str, Path, t.Dict[str, t.Any]]
 
-@xmod
+
+@xmod.xmod
 def tdir(
-    *args,
+    *args: Arg,
     chdir: bool = True,
-    methods: str = patch.TEST_PREFIX,
-    use_dir: str = '',
-    save: bool = False,
     clear: bool = False,
-    **kwargs,
-):
+    methods: str = patch.TEST_PREFIX,
+    save: bool = False,
+    use_dir: str = '',
+    **kwargs: Arg,
+) -> '_Tdir':
     """
     Set up a temporary directory, fill it with files, then tear it down at
     the end of an operation.
@@ -154,37 +162,35 @@ def tdir(
         If set to true, the temp directory is not deleted at end and its name
         is printed to `sys.stderr`
     """
+    td: _Tdir
+
+    @dek.dek(methods=methods)
+    def call(func, *args, **kwargs) -> None:
+        with td:
+            func(*args, **kwargs)
 
     is_decorator = len(args) == 1 and callable(args[0]) and not kwargs
     if is_decorator:
         decorator = args[0]
         args = ()
 
-    obj = Tdir(args, chdir, clear, kwargs, save, use_dir)
-
-    @dek(methods=methods)
-    def call(func, *args, **kwargs):
-        with obj:
-            func(*args, **kwargs)
-
-    obj._call = call
-
-    if is_decorator:
-        return obj(decorator)
-
-    return obj
+    d = dict(locals())
+    fields = (f.name for f in dc.fields(_Tdir))
+    td = _Tdir(**{f: d[f] for f in fields})
+    return td(decorator) if is_decorator else td
 
 
-class Tdir:
-    def __init__(self, args, chdir, clear, kwargs, save, use_dir):
-        self.args = args
-        self.chdir = chdir
-        self.clear = clear
-        self.kwargs = kwargs
-        self.save = save
-        self.use_dir = use_dir
+@dc.dataclass
+class _Tdir:
+    args: t.Sequence[Arg]
+    call: t.Callable
+    chdir: bool
+    clear: bool
+    kwargs: t.Dict[str, Arg]
+    save: bool
+    use_dir: str
 
-    def __enter__(self):
+    def __enter__(self) -> Path:
         if self.use_dir:
             self.directory = Path(self.use_dir)
         else:
@@ -207,7 +213,12 @@ class Tdir:
 
         return self.directory
 
-    def __exit__(self, *args):
+    def __exit__(
+        self,
+        exc_type: t.Optional[t.Type[BaseException]],
+        exc_val: t.Optional[BaseException],
+        exc_tb: t.Optional[TracebackType],
+    ) -> None:
         if self.chdir:
             try:
                 os.chdir(self.old_directory)
@@ -217,14 +228,15 @@ class Tdir:
         if self.save:
             msg = f'🗃 tdir saving {self.directory.absolute()} 🗃'
             print(msg, file=sys.stderr)
+
         elif not self.use_dir:
-            self._td.__exit__(*args)
+            self._td.__exit__(exc_type, exc_val, exc_tb)
 
-    def __call__(self, *args, **kwargs):
-        return self._call(*args, **kwargs)
+    def __call__(self, *args, **kwargs) -> t.Any:
+        return self.call(*args, **kwargs)
 
 
-def fill(_root, *args, **kwargs):
+def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
     """
     Recursively fills a directory from file names and optional values.
 
@@ -254,6 +266,7 @@ def fill(_root, *args, **kwargs):
         If it's a Path, that file is copied to the target directory but with
         the key as its name.
     """
+    _root = Path(_root)
     for a in args:
         if isinstance(a, str):
             a = {a.strip(): a}
@@ -264,7 +277,7 @@ def fill(_root, *args, **kwargs):
         fill(_root, **a)
 
     for k, v in kwargs.items():
-        rk = Path(_root) / k
+        rk = _root / k
         is_dir = isinstance(v, (dict, list, tuple))
         to_make = rk if is_dir else rk.parent
         to_make.mkdir(parents=True, exist_ok=True)
@@ -275,8 +288,10 @@ def fill(_root, *args, **kwargs):
             rk.write_text(v)
 
         elif isinstance(v, Path):
-            copy = shutil.copytree if v.is_dir() else shutil.copyfile
-            copy(str(v), str(rk))
+            if v.is_dir():
+                shutil.copytree(str(v), str(rk))
+            else:
+                shutil.copyfile(str(v), str(rk))
 
         elif isinstance(v, (bytes, bytearray)):
             rk.write_bytes(v)
