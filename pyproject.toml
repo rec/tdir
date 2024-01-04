@@ -14,6 +14,9 @@ authors = ["Tom Ritchford <tom@swirly.com>"]
 license = "MIT"
 readme = "README.md"
 include = ["tdir.pyi"]
+repository = "https://github.com/rec/tdir"
+homepage = "https://github.com/rec/tdir"
+documentation = "https://rec.github.io/tdir"
 
 [tool.poetry.dependencies]
 python = ">=3.8"
