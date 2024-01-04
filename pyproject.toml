@@ -21,13 +21,13 @@ dek = "*"
 xmod = "*"
 
 [tool.poetry.group.dev.dependencies]
+black = "*"
 coverage = "*"
 doks = "*"
-pytest = "*"
 flake8 = "*"
-black = "*"
 isort = "*"
 mypy = "*"
+pytest = "*"
 ruff = "*"
 
 [tool.coverage.run]
@@ -37,7 +37,12 @@ source = ["tdir"]
 [tool.coverage.report]
 fail_under = "93"
 skip_covered = true
-exclude_lines = ["pragma: no cover", "if False:", "if __name__ == .__main__.:", "raise NotImplementedError"]
+exclude_lines = [
+    "pragma: no cover",
+    "if False:",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
