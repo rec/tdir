@@ -164,8 +164,8 @@ def tdir(
     """
     td: _Tdir
 
-    @dek.dek(methods=methods)
-    def call(func, *args, **kwargs) -> None:
+    @dek.dek(methods=methods)  # type: ignore[misc]
+    def call(func: t.Callable[..., None], *args: t.Any, **kwargs: t.Any) -> None:
         with td:
             func(*args, **kwargs)
 
@@ -183,7 +183,7 @@ def tdir(
 @dc.dataclass
 class _Tdir:
     args: t.Sequence[Arg]
-    call: t.Callable
+    call: t.Callable[..., '_Tdir']
     chdir: bool
     clear: bool
     kwargs: t.Dict[str, Arg]
@@ -232,7 +232,7 @@ class _Tdir:
         elif not self.use_dir:
             self._td.__exit__(exc_type, exc_val, exc_tb)
 
-    def __call__(self, *args, **kwargs) -> t.Any:
+    def __call__(self, *args: t.Any, **kwargs: t.Any) -> _Tdir:
         return self.call(*args, **kwargs)
 
 
