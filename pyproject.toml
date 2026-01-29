@@ -1,32 +1,55 @@
-[tool.doks]
-auto = true
-
-[tool.poetry]
+[project]
 name = "tdir"
 version = "1.8.2"
 description = "🗃 Create and fill a temporary directory 🗃"
-authors = ["Tom Ritchford <tom@swirly.com>"]
-license = "MIT"
+authors = [{ name = "Tom Ritchford", email = "tom@swirly.com" }]
+requires-python = ">=3.8"
 readme = "README.md"
-include = ["tdir.pyi"]
-repository = "https://github.com/rec/tdir"
-homepage = "https://github.com/rec/tdir"
-documentation = "https://rec.github.io/tdir"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "dek",
+    "xmod",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8"
-dek = "*"
-xmod = "*"
+[project.urls]
+Homepage = "https://github.com/rec/tdir"
+Repository = "https://github.com/rec/tdir"
+Documentation = "https://rec.github.io/tdir"
 
-[tool.poetry.group.dev.dependencies]
-black = "*"
-coverage = "*"
-doks = "*"
-flake8 = "*"
-isort = "*"
-mypy = "*"
-pytest = "*"
-ruff = "*"
+[tool.doks]
+auto = true
+
+[dependency-groups]
+dev = [
+    "black",
+    "coverage",
+    "doks",
+    "flake8",
+    "isort",
+    "mypy",
+    "pytest",
+    "ruff",
+]
+
+[tool.uv]
+
+[tool.uv.build-backend]
+module-root = ""
+source-include = ["tdir.pyi/**"]
+
+[build-system]
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
 
 [tool.coverage.run]
 branch = true
@@ -50,6 +73,3 @@ quote-style = "single"
 
 [tool.mypy]
 strict = true
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
