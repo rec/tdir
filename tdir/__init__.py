@@ -97,6 +97,7 @@ either be used as a context manager, or a decorator for functions or classes.
 
         ORIGINAL_PATH = Path().absolute()
 """
+
 from __future__ import annotations
 
 import dataclasses as dc
@@ -128,7 +129,7 @@ def tdir(
     save: bool = False,
     use_dir: str = '',
     **kwargs: Arg,
-) -> '_Tdir':
+) -> _Tdir:
     """
     Set up a temporary directory, fill it with files, then tear it down at
     the end of an operation.
@@ -164,7 +165,7 @@ def tdir(
     """
     td: _Tdir
 
-    @dek.dek(methods=methods)  # type: ignore[misc]
+    @dek.dek(methods=methods)
     def call(func: t.Callable[..., None], *args: t.Any, **kwargs: t.Any) -> None:
         with td:
             func(*args, **kwargs)
@@ -183,7 +184,7 @@ def tdir(
 @dc.dataclass
 class _Tdir:
     args: t.Sequence[Arg]
-    call: t.Callable[..., '_Tdir']
+    call: t.Callable[..., _Tdir]
     chdir: bool
     clear: bool
     kwargs: t.Dict[str, Arg]
@@ -273,7 +274,7 @@ def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
         elif isinstance(a, Path):
             a = {a.name: a}
         elif not isinstance(a, dict):
-            raise TypeError('Do not understand type %s of %s' % (a, type(a)))
+            raise TypeError(f'Do not understand type {a} of {type(a)}')
         fill(_root, **a)
 
     for k, v in kwargs.items():
@@ -303,4 +304,4 @@ def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
             fill(rk, *v)
 
         else:
-            raise TypeError('Do not understand type %s=%s' % (k, v))
+            raise TypeError(f'Do not understand type {k}={v}')
