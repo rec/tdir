@@ -28,7 +28,7 @@ either be used as a context manager, or a decorator for functions or classes.
     # With a single file
     with tdir('hello') as td:
         # The file `hello` is there
-        assert Path('hello').read_text() = 'hello\n'
+        assert Path('hello').read_text() == 'hello\n'
 
         # We're in a temporary directory
         assert td == Path.cwd()
@@ -74,20 +74,20 @@ either be used as a context manager, or a decorator for functions or classes.
     # Decorate a TestCase so each test runs in a new temporary directory
     # with two files
     @tdir('a', foo='bar')
-    class MyTest(unittest.TestCast):
+    class MyTest(unittest.TestCase):
         def test_something(self):
-            assert Path('a').read_text() = 'a\n'
+            assert Path('a').read_text() == 'a\n'
 
         def test_something_else(self):
-            assert Path('foo').read_text() = 'bar\n'
+            assert Path('foo').read_text() == 'bar\n'
 
 
-    class MyTest2(unittest.TestCast):
-        # Decorate just one test in a unitttest
+    class MyTest2(unittest.TestCase):
+        # Decorate just one test in unittest
         @tdir(foo='bar', baz=bytes(range(4)))  # binary files are possible
         def test_something(self):
-            assert Path('foo').read_text() = 'bar\n'
-            assert Path('baz').read_bytes() = bytes(range(4)))
+            assert Path('foo').read_text() == 'bar\n'
+            assert Path('baz').read_bytes() == bytes(range(4))
 
         # Run test in an empty temporary directory
         @tdir
