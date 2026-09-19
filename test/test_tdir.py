@@ -71,6 +71,14 @@ def test_error():
             tdir.fill('.', foo=3)
     assert m.value.args[0].startswith('Do not understand type')
 
+
+def test_fill_rejects_paths_outside_the_root(tmp_path):
+    with pytest.raises(ValueError, match='stay under'):
+        tdir.fill(tmp_path, **{'../outside': 'outside'})
+
+    with pytest.raises(ValueError, match='stay under'):
+        tdir.fill(tmp_path, **{str(tmp_path.parent / 'outside'): 'outside'})
+
     with pytest.raises(TypeError) as m:
         with tdir(None):
             pass

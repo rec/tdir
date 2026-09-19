@@ -294,7 +294,10 @@ def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
         fill(_root, **a)
 
     for k, v in kwargs.items():
-        rk = _root / k
+        key = Path(k)
+        if key.is_absolute() or '..' in key.parts:
+            raise ValueError(f'Fixture path must stay under its root: {k!r}')
+        rk = _root / key
         is_dir = isinstance(v, (dict, list, tuple))
         to_make = rk if is_dir else rk.parent
         to_make.mkdir(parents=True, exist_ok=True)
