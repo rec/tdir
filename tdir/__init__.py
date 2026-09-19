@@ -117,14 +117,22 @@ import xmod
 
 __all__ = 'tdir', 'fill'
 
-Arg = t.Union[str, Path, t.Dict[str, t.Any]]
+FixtureValue: t.TypeAlias = (
+    str
+    | Path
+    | bytes
+    | bytearray
+    | dict[str, 'FixtureValue']
+    | list['FixtureValue']
+    | tuple['FixtureValue', ...]
+)
 
 _CWD_LOCK = threading.RLock()
 
 
 @xmod.xmod
 def tdir(
-    *args: Arg,
+    *args: FixtureValue | t.Callable[..., object],
     chdir: bool = True,
     clear: bool = False,
     methods: str = patch.TEST_PREFIX,
@@ -132,7 +140,7 @@ def tdir(
     text_encoding: str | None = None,
     text_errors: str | None = None,
     use_dir: str = '',
-    **kwargs: Arg,
+    **kwargs: FixtureValue,
 ) -> _Tdir:
     """
     Set up a temporary directory, fill it with files, then tear it down at
@@ -187,11 +195,11 @@ def tdir(
 
 @dc.dataclass
 class _Tdir:
-    args: t.Sequence[Arg]
+    args: tuple[FixtureValue, ...]
     call: t.Callable[..., _Tdir]
     chdir: bool
     clear: bool
-    kwargs: t.Dict[str, Arg]
+    kwargs: dict[str, FixtureValue]
     save: bool
     text_encoding: str | None
     text_errors: str | None
@@ -264,11 +272,11 @@ class _Tdir:
 
 
 def fill(
-    _root: t.Union[str, Path],
-    *args: Arg,
+    _root: str | Path,
+    *args: FixtureValue,
     text_encoding: str | None = None,
     text_errors: str | None = None,
-    **kwargs: Arg,
+    **kwargs: FixtureValue,
 ) -> None:
     """
     Recursively fills a directory from file names and optional values.
