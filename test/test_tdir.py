@@ -41,6 +41,11 @@ def test_binary():
             assert (td / i).read_bytes() == i.upper().encode()
 
 
+def test_text_encoding_is_opt_in():
+    with tdir(one='café', text_encoding='utf-8') as td:
+        assert (td / 'one').read_bytes() == b'caf\xc3\xa9\n'
+
+
 def test_list():
     with tdir(sub=['one', 'two']) as td:
         sub = td / 'sub'

@@ -129,6 +129,8 @@ def tdir(
     clear: bool = False,
     methods: str = patch.TEST_PREFIX,
     save: bool = False,
+    text_encoding: str | None = None,
+    text_errors: str | None = None,
     use_dir: str = '',
     **kwargs: Arg,
 ) -> _Tdir:
@@ -191,6 +193,8 @@ class _Tdir:
     clear: bool
     kwargs: t.Dict[str, Arg]
     save: bool
+    text_encoding: str | None
+    text_errors: str | None
     use_dir: str
     _cwd_lock_acquired: bool = dc.field(default=False, init=False)
 
@@ -213,7 +217,13 @@ class _Tdir:
                     else:
                         f.unlink()
 
-            fill(self.directory, *self.args, **self.kwargs)
+            fill(
+                self.directory,
+                *self.args,
+                text_encoding=self.text_encoding,
+                text_errors=self.text_errors,
+                **self.kwargs,
+            )
 
             if self.chdir:
                 self.old_directory = os.getcwd()
@@ -253,7 +263,13 @@ class _Tdir:
         return self.call(*args, **kwargs)
 
 
-def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
+def fill(
+    _root: t.Union[str, Path],
+    *args: Arg,
+    text_encoding: str | None = None,
+    text_errors: str | None = None,
+    **kwargs: Arg,
+) -> None:
     """
     Recursively fills a directory from file names and optional values.
 
@@ -291,7 +307,7 @@ def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
             a = {a.name: a}
         elif not isinstance(a, dict):
             raise TypeError(f'Do not understand type {a} of {type(a)}')
-        fill(_root, **a)
+        fill(_root, **t.cast(t.Any, a))
 
     for k, v in kwargs.items():
         key = Path(k)
@@ -305,7 +321,7 @@ def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
         if isinstance(v, str):
             if not v.endswith('\n'):
                 v += '\n'
-            rk.write_text(v)
+            rk.write_text(v, encoding=text_encoding, errors=text_errors)
 
         elif isinstance(v, Path):
             if v.is_dir():
@@ -317,10 +333,15 @@ def fill(_root: t.Union[str, Path], *args: Arg, **kwargs: Arg) -> None:
             rk.write_bytes(v)
 
         elif isinstance(v, dict):
-            fill(rk, **v)
+            fill(
+                rk,
+                text_encoding=text_encoding,
+                text_errors=text_errors,
+                **v,
+            )
 
         elif isinstance(v, (list, tuple)):
-            fill(rk, *v)
+            fill(rk, *v, text_encoding=text_encoding, text_errors=text_errors)
 
         else:
             raise TypeError(f'Do not understand type {k}={v}')
