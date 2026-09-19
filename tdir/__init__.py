@@ -329,7 +329,7 @@ def fill(
         if isinstance(v, str):
             if not v.endswith('\n'):
                 v += '\n'
-            rk.write_text(v, encoding=text_encoding, errors=text_errors)
+            rk.write_text(v, encoding=text_encoding, errors=text_errors, newline='\n')
 
         elif isinstance(v, Path):
             if v.is_dir():
