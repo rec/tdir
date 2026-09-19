@@ -96,6 +96,16 @@ either be used as a context manager, or a decorator for functions or classes.
 
         ORIGINAL_PATH = Path().absolute()
 
+### A note on AI use
+
+Version 2.0 has exactly the same API as before, and the great majority of the code is
+still the handwritten code from before, but I recently used a coding assistant to find a
+lot of possible errors and edge cases and fix them.
+
+I believe it should do exactly what it did before, but not fail in some unusual but
+certainly not impossible cases. Please let me know with an [issue
+report](https://github.com/rec/tdir/issues/new) if any problems crop up.
+
 ## Concurrency and file boundaries
 
 `chdir=True` contexts are serialized across threads because the current
