@@ -1,6 +1,7 @@
 import os
 import shutil
 import sys
+import threading
 import unittest
 from pathlib import Path
 
@@ -236,3 +237,22 @@ def test_recursive():
             assert f2.exists() and f3.exists()
         assert f2.exists() and not f3.exists()
     assert not f2.exists() and not f3.exists()
+
+
+def test_chdir_contexts_are_serialized_across_threads():
+    started = threading.Event()
+    entered = threading.Event()
+
+    def use_tdir() -> None:
+        started.set()
+        with tdir():
+            entered.set()
+
+    with tdir():
+        thread = threading.Thread(target=use_tdir)
+        thread.start()
+        assert started.wait(1)
+        assert not entered.wait(0.01)
+
+    thread.join(1)
+    assert entered.is_set()

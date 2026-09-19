@@ -119,6 +119,8 @@ __all__ = 'tdir', 'fill'
 
 Arg = t.Union[str, Path, t.Dict[str, t.Any]]
 
+_CWD_LOCK = threading.RLock()
+
 
 @xmod.xmod
 def tdir(
@@ -176,7 +178,7 @@ def tdir(
         args = ()
 
     d = dict(locals())
-    fields = (f.name for f in dc.fields(_Tdir))
+    fields = (f.name for f in dc.fields(_Tdir) if f.init)
     td = _Tdir(**{f: d[f] for f in fields})
     return td(decorator) if is_decorator else td
 
@@ -190,27 +192,37 @@ class _Tdir:
     kwargs: t.Dict[str, Arg]
     save: bool
     use_dir: str
+    _cwd_lock_acquired: bool = dc.field(default=False, init=False)
 
     def __enter__(self) -> Path:
-        if self.use_dir:
-            self.directory = Path(self.use_dir)
-        else:
-            suffix = f'-{threading.get_ident()}-{os.getpid()}'
-            self._td = tempfile.TemporaryDirectory(suffix=suffix)
-            self.directory = Path(self._td.__enter__())
-
-        if self.clear:
-            for f in self.directory.iterdir():
-                if f.is_dir():
-                    shutil.rmtree(f)
-                else:
-                    f.unlink()
-
-        fill(self.directory, *self.args, **self.kwargs)
-
         if self.chdir:
-            self.old_directory = os.getcwd()
-            os.chdir(self.directory)
+            _CWD_LOCK.acquire()
+            self._cwd_lock_acquired = True
+        try:
+            if self.use_dir:
+                self.directory = Path(self.use_dir)
+            else:
+                suffix = f'-{threading.get_ident()}-{os.getpid()}'
+                self._td = tempfile.TemporaryDirectory(suffix=suffix)
+                self.directory = Path(self._td.__enter__())
+
+            if self.clear:
+                for f in self.directory.iterdir():
+                    if f.is_dir():
+                        shutil.rmtree(f)
+                    else:
+                        f.unlink()
+
+            fill(self.directory, *self.args, **self.kwargs)
+
+            if self.chdir:
+                self.old_directory = os.getcwd()
+                os.chdir(self.directory)
+        except BaseException:
+            if self._cwd_lock_acquired:
+                _CWD_LOCK.release()
+                self._cwd_lock_acquired = False
+            raise
 
         return self.directory
 
@@ -232,6 +244,10 @@ class _Tdir:
 
         elif not self.use_dir:
             self._td.__exit__(exc_type, exc_val, exc_tb)
+
+        if self._cwd_lock_acquired:
+            _CWD_LOCK.release()
+            self._cwd_lock_acquired = False
 
     def __call__(self, *args: t.Any, **kwargs: t.Any) -> _Tdir:
         return self.call(*args, **kwargs)
